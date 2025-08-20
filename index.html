@@ -68,13 +68,12 @@
         /* --- Home Page: Hero Section Styling --- */
         .hero-parallax {
             background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80');
-            min-height: 100vh; /* This is key to the original look */
+            min-height: 85vh; /* Adjusted to allow scrolling */
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
             position: relative;
             display: flex;
-            flex-direction: column; /* To stack content and footer */
             justify-content: center;
             align-items: center;
             text-align: center;
@@ -94,10 +93,6 @@
             z-index: 1;
             max-width: 800px;
             padding: 2rem;
-            flex-grow: 1; /* Allows content to take up space */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
         .hero-title {
             font-family: var(--font-heading);
@@ -112,29 +107,27 @@
             max-width: 600px;
             margin: 0 auto;
         }
-        /* --- Lesson Planner Page: Content Area Styling --- */
+        /* --- Content Areas (used on both pages) --- */
         .content-area {
-            padding: 120px 2rem 4rem; /* Top padding to clear the fixed navbar */
+            padding: 4rem 2rem;
             background-color: #ffffff;
-            min-height: 100vh; /* Ensures footer is at the bottom */
-            display: flex;
-            flex-direction: column;
         }
         .content-container {
             max-width: 900px;
             margin: 0 auto;
-            flex-grow: 1; /* Pushes footer down */
         }
-        /* --- Footer (Styles apply to both footers) --- */
+        /* --- Lesson Planner Page Specific Styles --- */
+        #lesson-planner .content-area {
+             padding-top: 120px; /* Top padding to clear the fixed navbar */
+             min-height: 100vh;
+        }
+        /* --- Footer (Only on Homepage) --- */
         .site-footer {
             background-color: var(--primary-dark);
             color: rgba(255, 255, 255, 0.7);
             text-align: center;
             padding: 1.5rem;
             font-size: 0.9rem;
-            width: 100%;
-            position: relative; /* Needed for z-index on hero */
-            z-index: 1;
         }
     </style>
 </head>
@@ -156,10 +149,17 @@
                     Though the word "Humanist" is in the title, this free resource is designed to assist researchers and educators of all sorts. Explore and enjoy! Much more to come!
                 </p>
             </div>
-            <footer class="site-footer">
-                <p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p>
-            </footer>
         </header>
+        <!-- This section is REQUIRED to create scrolling space to see the parallax effect -->
+        <section class="content-area">
+             <div class="content-container">
+                <h2>A Free Resource</h2>
+                <p>This toolkit is designed to grow over time, providing a centralized hub for valuable educational materials and research aids.</p>
+            </div>
+        </section>
+        <footer class="site-footer">
+            <p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p>
+        </footer>
     </main>
 
     <!-- PAGE 2: The Lesson Planner Content (Initially hidden) -->
@@ -169,23 +169,19 @@
                 <h1>Lesson Planner</h1>
                 <p>This is the Lesson Planner page. Content will be added here soon.</p>
             </div>
-            <footer class="site-footer">
-                <p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p>
-            </footer>
         </div>
+        <!-- The footer has been removed from this page as requested -->
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Parallax Effect Script (for the hero section) ---
+            // --- Parallax Effect Script ---
             const hero = document.getElementById('hero');
             if (hero) {
                 window.addEventListener('scroll', function() {
-                    // Only apply parallax if the home page is visible
-                    if (document.getElementById('home').style.display !== 'none') {
-                        let scrollPosition = window.pageYOffset;
-                        hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
-                    }
+                    // This effect only applies to the hero element, which only exists on the home "page"
+                    let scrollPosition = window.pageYOffset;
+                    hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
                 });
             }
 
@@ -197,22 +193,18 @@
                 link.addEventListener('click', function() {
                     const pageId = this.getAttribute('data-page');
 
-                    // 1. Hide all pages
                     pages.forEach(page => {
                         page.style.display = 'none';
                     });
 
-                    // 2. Show the target page
                     const targetPage = document.getElementById(pageId);
                     if (targetPage) {
                         targetPage.style.display = 'block';
                     }
 
-                    // 3. Update the 'active' class on the navigation links
                     navLinks.forEach(nav => nav.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // 4. Scroll to the top of the page
                     window.scrollTo(0, 0);
                 });
             });
