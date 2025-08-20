@@ -46,7 +46,7 @@
         .activity-item-header { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
         .activity-item-header .form-group { flex-grow: 1; margin-bottom: 0; }
         .activity-item-header .minutes-group input { width: 80px; user-select: text;}
-        .form-actions { display: flex; gap: 1rem; }
+        .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; } /* Added margin-top */
         .add-activity-btn, .teach-lesson-btn { flex-grow: 1; padding: 1rem; color: white; border: none; border-radius: 4px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color 0.3s; }
         .add-activity-btn { background-color: var(--accent-color); } .add-activity-btn:hover { background-color: var(--accent-color-hover); }
         .teach-lesson-btn { background-color: var(--teach-color); } .teach-lesson-btn:hover { background-color: var(--teach-color-hover); }
@@ -63,14 +63,14 @@
         .teach-view-right { flex-basis: 50%; background: var(--primary-light); border-left: 1px solid var(--border-color); }
         .static-info-item { margin-bottom: 2rem; }
         .static-info-item h3 { font-family: var(--font-heading); color: var(--primary-dark); border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
-        .static-info-item p { white-space: pre-wrap; }
+        .static-info-item p { white-space: pre-wrap; user-select: text; }
         .activities-display-container { height: 100%; overflow: hidden; position: relative; }
         .activities-display-scroller { position: absolute; width: 100%; top: 0; transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
         .activity-display-item { padding: 1.5rem; margin: 0 1rem 1rem 0; border: 1px solid var(--border-color); border-radius: 8px; opacity: 0.4; transform: scale(0.95); transition: opacity 0.5s, transform 0.5s, box-shadow 0.5s; }
         .activity-display-item.is-active { opacity: 1; transform: scale(1); box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); border-color: var(--accent-color); }
         .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; }
         .activity-display-item span { font-style: italic; color: #777; }
-        .activity-display-item p { margin-top: 1rem; white-space: pre-wrap; }
+        .activity-display-item p { margin-top: 1rem; white-space: pre-wrap; user-select: text; }
         .stop-teaching-btn { position: fixed; bottom: 2rem; right: 2rem; background-color: var(--stop-color); color: white; border: none; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; transform: scale(0); opacity: 0; }
         .stop-teaching-btn:hover { background-color: var(--stop-color-hover); }
 
@@ -86,7 +86,7 @@
         .time-bar-handle { position: absolute; left: 50%; transform: translateX(-50%); width: 25px; height: 10px; background: var(--primary-dark); border-radius: 3px; cursor: ns-resize; }
         
         /* State Transitions */
-        #lesson-planner.teach-mode-active .lesson-form { opacity: 0; transform: translateY(-20px); pointer-events: none; }
+        #lesson-planner.teach-mode-active .lesson-form { opacity: 0; transform: translateY(-20px); pointer-events: none; height: 0; overflow: hidden; }
         #lesson-planner.teach-mode-active .teach-view { display: block; opacity: 1; transform: translateY(0); }
         #lesson-planner.teach-mode-active .stop-teaching-btn { transform: scale(1); opacity: 1; }
     </style>
@@ -125,6 +125,7 @@
                     <div class="form-group"><label for="learning-goals">Learning Goals of the Lesson</label><textarea id="learning-goals"></textarea></div>
                     <h2>Activities</h2>
                     <div id="activities-container"></div>
+                    <!-- THIS IS THE CORRECTED PART THAT WAS MISSING -->
                     <div class="form-actions">
                         <button type="button" class="add-activity-btn" id="add-activity-btn">+ Add Activity</button>
                         <button type="button" class="teach-lesson-btn" id="teach-lesson-btn">&#9658; Teach My Lesson</button>
@@ -221,11 +222,11 @@
             let totalLessonSeconds = 0;
             let currentSeconds = 0;
             let timerInterval = null;
-            let timerMode = 'stopwatch'; // 'stopwatch' or 'timer'
+            let timerMode = 'stopwatch';
 
             const formatTime = (seconds) => {
                 const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
+                const secs = Math.abs(seconds % 60);
                 return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
             };
 
@@ -237,7 +238,6 @@
                 timeBarFill.style.height = `${fillHeight}%`;
                 timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`;
                 
-                // Update active activity
                 let activeActivityFound = false;
                 activitiesData.forEach((activity, index) => {
                     const activityEl = document.getElementById(`display-activity-${index}`);
@@ -250,13 +250,20 @@
                         activeActivityFound = true;
                     }
                 });
-                if (!activeActivityFound) {
+                if (!activeActivityFound && currentSeconds >= totalLessonSeconds) {
+                    const lastActivity = document.getElementById(`display-activity-${activitiesData.length - 1}`);
+                    if (lastActivity && !lastActivity.classList.contains('is-active')) {
+                        document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
+                        lastActivity.classList.add('is-active');
+                        activitiesDisplayScroller.style.transform = `translateY(-${lastActivity.offsetTop}px)`;
+                    }
+                } else if (!activeActivityFound) {
                      document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
                 }
             };
             
             const startTimer = () => {
-                if (timerInterval) return;
+                if (timerInterval || currentSeconds >= totalLessonSeconds) return;
                 playPauseBtn.innerHTML = '&#9208;'; // Pause icon
                 timerInterval = setInterval(() => {
                     if (currentSeconds < totalLessonSeconds) {
@@ -284,19 +291,19 @@
                 const totalMinutes = updateTotalTime();
                 if (totalMinutes === 0) { alert("Please add at least one activity with a time greater than 0."); return; }
                 
-                // 1. Gather data
                 activitiesData = [];
                 let cumulativeTime = 0;
                 Array.from(activitiesContainer.children).forEach((item, index) => {
                     const name = item.querySelector('input[type="text"]').value || `Activity ${index + 1}`;
                     const minutes = parseInt(item.querySelector('.activity-minutes').value, 10) || 0;
                     const notes = item.querySelector('textarea').value;
-                    activitiesData.push({ name, minutes, notes, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60) });
-                    cumulativeTime += minutes * 60;
+                    if (minutes > 0) {
+                        activitiesData.push({ name, minutes, notes, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60) });
+                        cumulativeTime += minutes * 60;
+                    }
                 });
                 totalLessonSeconds = cumulativeTime;
                 
-                // 2. Populate static info
                 staticInfoPanel.innerHTML = `
                     <div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value || 'N/A'}</p></div>
                     <div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value || 'N/A'}</p></div>
@@ -304,14 +311,12 @@
                     <div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value || 'N/A'}</p></div>
                 `;
 
-                // 3. Populate activities
                 activitiesDisplayScroller.innerHTML = activitiesData.map((act, index) => `
                     <div class="activity-display-item" id="display-activity-${index}">
                         <h4>${act.name} <span>(${act.minutes} min)</span></h4>
-                        <p>${act.notes}</p>
+                        <p>${act.notes || ' '}</p>
                     </div>`).join('');
                 
-                // 4. Reset timer and switch view
                 stopTimer();
                 currentSeconds = 0;
                 updateUI();
@@ -324,16 +329,17 @@
             });
 
             // --- Draggable Elements Logic ---
-            const handleDrag = (el, onDrag) => {
+            const handleDrag = (el, onDragMove, onDragEnd = () => {}) => {
                 let isDragging = false;
-                el.addEventListener('mousedown', e => { isDragging = true; el.style.cursor = 'grabbing'; document.body.style.cursor = 'grabbing'; });
-                document.addEventListener('mouseup', () => { isDragging = false; el.style.cursor = ''; document.body.style.cursor = ''; });
-                document.addEventListener('mousemove', e => { if (isDragging) onDrag(e); });
+                const onMouseDown = e => { isDragging = true; };
+                const onMouseMove = e => { if (isDragging) { e.preventDefault(); onDragMove(e); } };
+                const onMouseUp = () => { isDragging = false; onDragEnd(); };
+                el.addEventListener('mousedown', onMouseDown);
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
             };
 
-            // Resizer logic
             const leftPanel = document.querySelector('.teach-view-left');
-            const rightPanel = document.querySelector('.teach-view-right');
             handleDrag(document.getElementById('resizer'), e => {
                 const totalWidth = leftPanel.parentElement.offsetWidth;
                 const newLeftWidth = e.clientX - leftPanel.getBoundingClientRect().left;
@@ -342,14 +348,15 @@
                 }
             });
 
-            // Time bar handle logic
-            handleDrag(timeBarHandle, e => {
+            const onTimeBarDrag = e => {
                 const rect = timeBarContainer.getBoundingClientRect();
                 let newProgress = 1 - ((e.clientY - rect.top) / rect.height);
                 newProgress = Math.max(0, Math.min(1, newProgress));
                 currentSeconds = Math.round(newProgress * totalLessonSeconds);
                 updateUI();
-            });
+            };
+            timeBarContainer.addEventListener('mousedown', e => { if (e.target !== timeBarHandle) onTimeBarDrag(e); });
+            handleDrag(timeBarHandle, onTimeBarDrag);
         });
     </script>
 </body>
