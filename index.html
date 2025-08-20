@@ -13,11 +13,13 @@
     <style>
         /* --- General Styling & Resets --- */
         :root {
-            --primary-dark: #2c3e50; /* A dark, muted slate blue */
-            --primary-light: #ecf0f1; /* A soft, light grey */
-            --accent-color: #3498db;  /* A professional, vibrant blue */
-            --text-color-dark: #34495e; /* A slightly softer dark grey for text */
+            --primary-dark: #2c3e50;
+            --primary-light: #ecf0f1;
+            --accent-color: #3498db;
+            --accent-color-hover: #2980b9;
+            --text-color-dark: #34495e;
             --text-color-light: #ffffff;
+            --border-color: #bdc3c7;
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Lato', sans-serif;
         }
@@ -40,12 +42,7 @@
             padding: 1rem 0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .nav-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            list-style: none;
-        }
+        .nav-container { display: flex; justify-content: center; align-items: center; list-style: none; }
         .nav-item { margin: 0 20px; }
         .nav-item a {
             color: var(--text-color-light);
@@ -54,21 +51,18 @@
             font-weight: 700;
             padding: 5px 10px;
             border-radius: 4px;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease;
             cursor: pointer;
         }
-        .nav-item a:hover, .nav-item a.active {
-            background-color: var(--accent-color);
-            color: var(--text-color-light);
-        }
-        /* --- Page Containers --- */
-        .page-content {
-            display: block; /* Default state */
-        }
-        /* --- Home Page: Hero Section Styling --- */
+        .nav-item a:hover, .nav-item a.active { background-color: var(--accent-color); }
+
+        /* --- Page Structure --- */
+        .page-content { display: block; }
+
+        /* --- Home Page Styles --- */
         .hero-parallax {
-            background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80');
-            min-height: 85vh; /* Adjusted to allow scrolling */
+            background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format=fit=crop&w=1770&q=80');
+            min-height: 85vh;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -80,59 +74,99 @@
             color: var(--text-color-light);
         }
         .hero-parallax::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
         }
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
-            padding: 2rem;
-        }
-        .hero-title {
-            font-family: var(--font-heading);
-            font-size: 4rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
-        }
-        .hero-description {
-            font-size: 1.25rem;
-            font-weight: 300;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        /* --- Content Areas (used on both pages) --- */
-        .content-area {
-            padding: 4rem 2rem;
-            background-color: #ffffff;
-        }
-        .content-container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        /* --- Lesson Planner Page Specific Styles --- */
-        #lesson-planner .content-area {
-             padding-top: 120px; /* Top padding to clear the fixed navbar */
-             min-height: 100vh;
-        }
-        /* --- Footer (Only on Homepage) --- */
+        .hero-content { position: relative; z-index: 1; max-width: 800px; padding: 2rem; }
+        .hero-title { font-family: var(--font-heading); font-size: 4rem; margin-bottom: 1rem; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
+        .hero-description { font-size: 1.25rem; font-weight: 300; max-width: 600px; margin: 0 auto; }
         .site-footer {
             background-color: var(--primary-dark);
             color: rgba(255, 255, 255, 0.7);
-            text-align: center;
-            padding: 1.5rem;
-            font-size: 0.9rem;
+            text-align: center; padding: 1.5rem; font-size: 0.9rem;
         }
+        
+        /* --- Universal Content Area Styles --- */
+        .content-area { padding: 4rem 2rem; background-color: #ffffff; position: relative; }
+        .content-container { max-width: 900px; margin: 0 auto; }
+        
+        /* --- NEW: Lesson Planner Styles --- */
+        #lesson-planner .content-area {
+             padding-top: 120px;
+             min-height: 100vh;
+        }
+        .lesson-form .form-group { margin-bottom: 1.5rem; }
+        .lesson-form label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+        .lesson-form input[type="text"], .lesson-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            font-family: var(--font-body);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .lesson-form input[type="text"]:focus, .lesson-form textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+        .lesson-form textarea { min-height: 120px; resize: vertical; }
+        
+        /* Activities Section */
+        #activities-container .activity-item {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            /* Animation styles */
+            overflow: hidden;
+            max-height: 500px; /* Arbitrary large value */
+            opacity: 1;
+            transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .activity-item-header { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+        .activity-item-header .form-group { flex-grow: 1; margin-bottom: 0; }
+        .activity-item-header .minutes-group input { width: 80px; }
+        .add-activity-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+        .add-activity-btn:hover { background-color: var(--accent-color-hover); }
+
+        /* Total Time Widget */
+        .total-time-widget {
+            position: sticky;
+            top: 100px; /* Space from navbar */
+            float: right;
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .total-time-widget h3 { margin: 0 0 0.25rem 0; font-size: 1rem; font-weight: 400; opacity: 0.8; }
+        .total-time-widget p { margin: 0; font-size: 1.75rem; font-weight: 700; }
     </style>
 </head>
 <body>
-
     <nav class="navbar">
         <ul class="nav-container">
             <li class="nav-item"><a class="nav-link active" data-page="home">Home</a></li>
@@ -140,7 +174,7 @@
         </ul>
     </nav>
 
-    <!-- PAGE 1: The Home Page Content -->
+    <!-- PAGE 1: Home -->
     <main id="home" class="page-content">
         <header class="hero-parallax" id="hero">
             <div class="hero-content">
@@ -150,66 +184,143 @@
                 </p>
             </div>
         </header>
-        <!-- This section is REQUIRED to create scrolling space to see the parallax effect -->
-        <section class="content-area">
-             <div class="content-container">
-                <h2>A Free Resource</h2>
-                <p>This toolkit is designed to grow over time, providing a centralized hub for valuable educational materials and research aids.</p>
-            </div>
-        </section>
+        <section class="content-area" style="min-height: 40vh; background-color: #ffffff;"></section>
         <footer class="site-footer">
             <p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p>
         </footer>
     </main>
 
-    <!-- PAGE 2: The Lesson Planner Content (Initially hidden) -->
+    <!-- PAGE 2: Lesson Planner -->
     <main id="lesson-planner" class="page-content" style="display: none;">
         <div class="content-area">
             <div class="content-container">
+
+                <div class="total-time-widget">
+                    <h3>Total Lesson Time</h3>
+                    <p id="total-time-display">0 Minutes</p>
+                </div>
+                
                 <h1>Lesson Planner</h1>
-                <p>This is the Lesson Planner page. Content will be added here soon.</p>
+                <form class="lesson-form">
+                    <div class="form-group">
+                        <label for="course-name">Course Name</label>
+                        <input type="text" id="course-name" name="course-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="unit-name">Unit Name</label>
+                        <input type="text" id="unit-name" name="unit-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="course-objectives">Relevant Course Objectives</label>
+                        <textarea id="course-objectives" name="course-objectives"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="learning-goals">Learning Goals of the Lesson</label>
+                        <textarea id="learning-goals" name="learning-goals"></textarea>
+                    </div>
+
+                    <h2>Activities</h2>
+                    <div id="activities-container">
+                        <!-- Dynamic activities will be added here -->
+                    </div>
+                    <button type="button" class="add-activity-btn" id="add-activity-btn">+ Add Activity</button>
+                </form>
+
             </div>
         </div>
-        <!-- The footer has been removed from this page as requested -->
     </main>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Page Navigation Script ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page-content');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+                    pages.forEach(page => page.style.display = 'none');
+                    document.getElementById(pageId).style.display = 'block';
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    window.scrollTo(0, 0);
+                });
+            });
+
             // --- Parallax Effect Script ---
             const hero = document.getElementById('hero');
             if (hero) {
                 window.addEventListener('scroll', function() {
-                    // This effect only applies to the hero element, which only exists on the home "page"
                     let scrollPosition = window.pageYOffset;
                     hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
                 });
             }
 
-            // --- Page Navigation Script ---
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pages = document.querySelectorAll('.page-content');
+            // --- Lesson Planner Functionality ---
+            const addActivityBtn = document.getElementById('add-activity-btn');
+            const activitiesContainer = document.getElementById('activities-container');
+            const totalTimeDisplay = document.getElementById('total-time-display');
+            let activityCounter = 0;
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    const pageId = this.getAttribute('data-page');
-
-                    pages.forEach(page => {
-                        page.style.display = 'none';
-                    });
-
-                    const targetPage = document.getElementById(pageId);
-                    if (targetPage) {
-                        targetPage.style.display = 'block';
-                    }
-
-                    navLinks.forEach(nav => nav.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    window.scrollTo(0, 0);
+            function updateTotalTime() {
+                let totalMinutes = 0;
+                const minuteInputs = activitiesContainer.querySelectorAll('.activity-minutes');
+                minuteInputs.forEach(input => {
+                    totalMinutes += parseInt(input.value, 10) || 0;
                 });
-            });
+                totalTimeDisplay.textContent = `${totalMinutes} Minutes`;
+            }
+
+            if (addActivityBtn) {
+                addActivityBtn.addEventListener('click', function() {
+                    activityCounter++;
+                    const newActivity = document.createElement('div');
+                    newActivity.classList.add('activity-item');
+                    newActivity.innerHTML = `
+                        <div class="activity-item-header">
+                            <div class="form-group">
+                                <label for="activity-name-${activityCounter}">Activity Name</label>
+                                <input type="text" id="activity-name-${activityCounter}" name="activity-name-${activityCounter}">
+                            </div>
+                            <div class="form-group minutes-group">
+                                <label for="activity-minutes-${activityCounter}">Minutes</label>
+                                <input type="number" class="activity-minutes" id="activity-minutes-${activityCounter}" name="activity-minutes-${activityCounter}" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="activity-notes-${activityCounter}">Notes</label>
+                            <textarea id="activity-notes-${activityCounter}" name="activity-notes-${activityCounter}"></textarea>
+                        </div>
+                    `;
+                    
+                    // Style for smooth entry animation
+                    newActivity.style.maxHeight = '0';
+                    newActivity.style.opacity = '0';
+                    newActivity.style.paddingTop = '0';
+                    newActivity.style.paddingBottom = '0';
+                    newActivity.style.marginBottom = '0';
+
+                    activitiesContainer.appendChild(newActivity);
+
+                    // Trigger the animation
+                    setTimeout(() => {
+                        newActivity.style.maxHeight = '500px'; // Set to a value larger than the element will ever be
+                        newActivity.style.opacity = '1';
+                        newActivity.style.paddingTop = ''; // Revert to CSS values
+                        newActivity.style.paddingBottom = '';
+                        newActivity.style.marginBottom = '';
+                    }, 10);
+                });
+            }
+            
+            // Use event delegation for updating total time
+            if (activitiesContainer) {
+                activitiesContainer.addEventListener('input', function(e) {
+                    if (e.target.classList.contains('activity-minutes')) {
+                        updateTotalTime();
+                    }
+                });
+            }
         });
     </script>
-
 </body>
 </html>
