@@ -36,7 +36,7 @@
         #lesson-planner .content-area { padding-top: 120px; min-height: 100vh; overflow: hidden; }
         
         /* --- Lesson Planner Form Styles --- */
-        .lesson-form { transition: opacity 0.5s, transform 0.5s, height 0.5s; }
+        .form-view { transition: opacity 0.5s, transform 0.5s; height: calc(100vh - 120px); overflow-y: auto; padding-right: 15px; /* space for scrollbar */ }
         .lesson-form .form-group { margin-bottom: 1.5rem; }
         .lesson-form label { display: block; font-weight: 700; margin-bottom: 0.5rem; color: var(--primary-dark); }
         .lesson-form input[type="text"], .lesson-form textarea, .lesson-form input[type="number"] { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; font-family: var(--font-body); transition: border-color 0.3s, box-shadow 0.3s; user-select: text;}
@@ -50,7 +50,7 @@
         .add-activity-btn, .teach-lesson-btn { flex-grow: 1; padding: 1rem; color: white; border: none; border-radius: 4px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color 0.3s; }
         .add-activity-btn { background-color: var(--accent-color); } .add-activity-btn:hover { background-color: var(--accent-color-hover); }
         .teach-lesson-btn { background-color: var(--teach-color); } .teach-lesson-btn:hover { background-color: var(--teach-color-hover); }
-        .total-time-widget { position: sticky; top: 100px; float: right; background-color: var(--primary-dark); color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-align: center; z-index: 10; }
+        .total-time-widget { position: sticky; top: -1px; float: right; background-color: var(--primary-dark); color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-align: center; z-index: 10; margin-bottom: 1rem;}
         .total-time-widget h3 { margin: 0 0 0.25rem 0; font-size: 1rem; font-weight: 400; opacity: 0.8; }
         .total-time-widget p { margin: 0; font-size: 1.75rem; font-weight: 700; }
         
@@ -74,7 +74,7 @@
         .stop-teaching-btn { position: fixed; bottom: 2rem; right: 2rem; background-color: var(--stop-color); color: white; border: none; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; transform: scale(0); opacity: 0; z-index: 1100; }
         .stop-teaching-btn:hover { background-color: var(--stop-color-hover); }
 
-        /* --- Time Bar Styles --- */
+        /* Time Bar Styles */
         .time-controls-container { position: absolute; top: 0; left: 0; width: 100px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 1rem 0; background: var(--primary-light); border-right: 1px solid var(--border-color); z-index: 20; }
         #teach-time-display { font-weight: 700; font-size: 1.1rem; text-align: center; height: 40px; }
         .timer-controls button { background: none; border: none; font-size: 2.5rem; cursor: pointer; color: var(--primary-dark); transition: color 0.3s; height: 50px; }
@@ -86,7 +86,7 @@
         .time-bar-handle { position: absolute; left: 50%; transform: translate(-50%, 50%); width: 25px; height: 10px; background: var(--primary-dark); border-radius: 3px; cursor: ns-resize; }
         
         /* State Transitions */
-        #lesson-planner.teach-mode-active .lesson-form { opacity: 0; transform: translateY(-20px); pointer-events: none; height: 0; overflow: hidden; }
+        #lesson-planner.teach-mode-active .form-view { opacity: 0; transform: translateY(-20px); pointer-events: none; height: 0; overflow: hidden; }
         #lesson-planner.teach-mode-active .teach-view { display: block; opacity: 1; transform: translateY(0); }
         #lesson-planner.teach-mode-active .stop-teaching-btn { transform: scale(1); opacity: 1; }
     </style>
@@ -112,7 +112,7 @@
 
     <main id="lesson-planner" class="page-content" style="display: none;">
         <div class="content-area">
-            <div id="lesson-planner-content-wrapper">
+            <div class="form-view" id="form-view">
                 <form class="lesson-form">
                     <div class="total-time-widget"><h3 >Total Lesson Time</h3><p id="total-time-display">0 Minutes</p></div>
                     <h1>Lesson Planner</h1>
@@ -127,25 +127,24 @@
                         <button type="button" class="teach-lesson-btn" id="teach-lesson-btn">&#9658; Teach My Lesson</button>
                     </div>
                 </form>
-
-                <div class="teach-view">
-                    <div class="time-controls-container">
-                        <p id="teach-time-display">00:00 / 00:00</p>
-                        <div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div>
-                        <div class="time-bar-container" id="time-bar-container">
-                            <div class="time-bar-fill" id="time-bar-fill"></div>
-                            <div class="time-bar-handle" id="time-bar-handle"></div>
-                        </div>
-                        <div class="timer-mode-switcher">
-                            <label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label>
-                            <label><input type="radio" name="timer-mode" value="timer"> Timer</label>
-                        </div>
+            </div>
+            <div class="teach-view">
+                <div class="time-controls-container">
+                    <p id="teach-time-display">00:00 / 00:00</p>
+                    <div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div>
+                    <div class="time-bar-container" id="time-bar-container">
+                        <div class="time-bar-fill" id="time-bar-fill"></div>
+                        <div class="time-bar-handle" id="time-bar-handle"></div>
                     </div>
-                    <div class="teach-view-container">
-                        <div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div>
-                        <div class="resizer" id="resizer"></div>
-                        <div class="teach-panel teach-view-right" id="static-info-panel"></div>
+                    <div class="timer-mode-switcher">
+                        <label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label>
+                        <label><input type="radio" name="timer-mode" value="timer"> Timer</label>
                     </div>
+                </div>
+                <div class="teach-view-container">
+                    <div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div>
+                    <div class="resizer" id="resizer"></div>
+                    <div class="teach-panel teach-view-right" id="static-info-panel"></div>
                 </div>
             </div>
             <button class="stop-teaching-btn" id="stop-teaching-btn">&#9724; Stop Teaching</button>
@@ -224,7 +223,6 @@
                 const timerMode = document.querySelector('input[name="timer-mode"]:checked').value;
                 const progress = totalLessonSeconds > 0 ? (currentSeconds / totalLessonSeconds) : 0;
                 
-                // Update Time Display based on mode
                 const totalTimeFormatted = formatTime(totalLessonSeconds);
                 if (timerMode === 'timer') {
                     const remainingSeconds = totalLessonSeconds - currentSeconds;
@@ -239,7 +237,6 @@
                     timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`;
                 }
 
-                // Update Active Activity
                 let activeActivityFound = false;
                 activitiesData.forEach((activity, index) => {
                     const activityEl = document.getElementById(`display-activity-${index}`);
@@ -253,20 +250,16 @@
                     }
                 });
                 if (!activeActivityFound) {
-                     if (currentSeconds >= totalLessonSeconds && activitiesData.length > 0) {
-                        const lastActivity = document.getElementById(`display-activity-${activitiesData.length - 1}`);
-                        if (lastActivity && !lastActivity.classList.contains('is-active')) {
-                            document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
-                            lastActivity.classList.add('is-active');
-                        }
-                    } else {
-                        const firstActivity = document.getElementById('display-activity-0');
-                        if (firstActivity && !firstActivity.classList.contains('is-active')) {
-                            document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
-                            firstActivity.classList.add('is-active');
-                            activitiesDisplayScroller.style.transform = `translateY(0px)`;
-                        }
-                    }
+                     const firstActivity = document.getElementById('display-activity-0');
+                     const lastActivity = activitiesData.length > 0 ? document.getElementById(`display-activity-${activitiesData.length - 1}`) : null;
+                     document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
+                     
+                     if (currentSeconds >= totalLessonSeconds && lastActivity) {
+                        lastActivity.classList.add('is-active');
+                     } else if (firstActivity) {
+                        firstActivity.classList.add('is-active');
+                        activitiesDisplayScroller.style.transform = `translateY(0px)`;
+                     }
                 }
             };
             
@@ -307,6 +300,9 @@
                 const totalMinutes = updateTotalTime();
                 if (totalMinutes === 0) { alert("Please add at least one activity with a time greater than 0."); return; }
                 
+                // Set Stopwatch as the default mode
+                document.querySelector('input[name="timer-mode"][value="stopwatch"]').checked = true;
+
                 activitiesData = [];
                 let cumulativeTime = 0;
                 Array.from(activitiesContainer.children).forEach((item) => {
@@ -323,7 +319,6 @@
                 staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
                 activitiesDisplayScroller.innerHTML = activitiesData.map((act, index) => `<div class="activity-display-item" id="display-activity-${index}"><h4>${act.name} <span>(${act.minutes} min)</span></h4><p>${act.notes||' '}</p></div>`).join('');
                 
-                // This is the critical fix: read the mode first, then reset.
                 resetTeachMode();
                 lessonPlannerPage.classList.add('teach-mode-active');
             });
@@ -353,8 +348,18 @@
             });
 
             const onTimeBarDrag = e => {
+                const timerMode = document.querySelector('input[name="timer-mode"]:checked').value;
                 const rect = timeBarContainer.getBoundingClientRect();
-                let newProgress = 1 - ((e.clientY - rect.top) / rect.height);
+                let newProgress;
+
+                if (timerMode === 'timer') {
+                    // Corrected: Dragging down (increasing clientY) should decrease remaining time, which means INCREASING progress.
+                    newProgress = (e.clientY - rect.top) / rect.height;
+                } else { // Stopwatch
+                    // Dragging up (decreasing clientY) should increase elapsed time/progress.
+                    newProgress = 1 - ((e.clientY - rect.top) / rect.height);
+                }
+                
                 newProgress = Math.max(0, Math.min(1, newProgress));
                 currentSeconds = Math.round(newProgress * totalLessonSeconds);
                 updateUI();
