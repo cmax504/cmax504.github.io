@@ -82,7 +82,7 @@
         .timer-mode-switcher { margin-top: auto; font-size: 0.9rem; }
         .timer-mode-switcher label { margin: 0.5rem; cursor: pointer; display: block; text-align: center; }
         .time-bar-container { position: relative; width: 15px; flex-grow: 1; background: #ddd; border-radius: 10px; margin: 1rem 0; cursor: pointer; }
-        .time-bar-fill { position: absolute; width: 100%; background: var(--teach-color); border-radius: 10px; bottom: 0; } /* Always anchored at the bottom */
+        .time-bar-fill { position: absolute; width: 100%; background: var(--teach-color); border-radius: 10px; bottom: 0; }
         .time-bar-handle { position: absolute; left: 50%; transform: translate(-50%, 50%); width: 25px; height: 10px; background: var(--primary-dark); border-radius: 3px; cursor: ns-resize; }
         
         /* State Transitions */
@@ -213,7 +213,6 @@
             let currentSeconds = 0;
             let timerInterval = null;
             let isPaused = true;
-            let timerMode = 'stopwatch';
 
             const formatTime = (seconds) => {
                 const mins = String(Math.floor(Math.abs(seconds) / 60)).padStart(2, '0');
@@ -222,8 +221,10 @@
             };
 
             const updateUI = () => {
+                const timerMode = document.querySelector('input[name="timer-mode"]:checked').value;
                 const progress = totalLessonSeconds > 0 ? (currentSeconds / totalLessonSeconds) : 0;
                 
+                // Update Time Display based on mode
                 const totalTimeFormatted = formatTime(totalLessonSeconds);
                 if (timerMode === 'timer') {
                     const remainingSeconds = totalLessonSeconds - currentSeconds;
@@ -238,6 +239,7 @@
                     timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`;
                 }
 
+                // Update Active Activity
                 let activeActivityFound = false;
                 activitiesData.forEach((activity, index) => {
                     const activityEl = document.getElementById(`display-activity-${index}`);
@@ -251,19 +253,18 @@
                     }
                 });
                 if (!activeActivityFound) {
-                     const activeElements = document.querySelectorAll('.activity-display-item.is-active');
-                    if (activeElements.length > 0 || currentSeconds < totalLessonSeconds) {
-                        activeElements.forEach(el => el.classList.remove('is-active'));
-                        activitiesDisplayScroller.style.transform = `translateY(0px)`;
-                        if (activitiesData.length > 0 && currentSeconds < activitiesData[0].startTime) {
-                             document.getElementById('display-activity-0').classList.add('is-active');
-                        }
-                    }
-                    if (currentSeconds >= totalLessonSeconds && activitiesData.length > 0) {
+                     if (currentSeconds >= totalLessonSeconds && activitiesData.length > 0) {
                         const lastActivity = document.getElementById(`display-activity-${activitiesData.length - 1}`);
                         if (lastActivity && !lastActivity.classList.contains('is-active')) {
                             document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
                             lastActivity.classList.add('is-active');
+                        }
+                    } else {
+                        const firstActivity = document.getElementById('display-activity-0');
+                        if (firstActivity && !firstActivity.classList.contains('is-active')) {
+                            document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
+                            firstActivity.classList.add('is-active');
+                            activitiesDisplayScroller.style.transform = `translateY(0px)`;
                         }
                     }
                 }
@@ -299,10 +300,7 @@
             playPauseBtn.addEventListener('click', () => isPaused ? startTimer() : stopTimer());
 
             document.querySelectorAll('input[name="timer-mode"]').forEach(radio => {
-                radio.addEventListener('change', (e) => { 
-                    timerMode = e.target.value;
-                    resetTeachMode();
-                });
+                radio.addEventListener('change', resetTeachMode);
             });
 
             teachLessonBtn.addEventListener('click', () => {
@@ -325,6 +323,7 @@
                 staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
                 activitiesDisplayScroller.innerHTML = activitiesData.map((act, index) => `<div class="activity-display-item" id="display-activity-${index}"><h4>${act.name} <span>(${act.minutes} min)</span></h4><p>${act.notes||' '}</p></div>`).join('');
                 
+                // This is the critical fix: read the mode first, then reset.
                 resetTeachMode();
                 lessonPlannerPage.classList.add('teach-mode-active');
             });
