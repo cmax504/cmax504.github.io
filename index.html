@@ -25,7 +25,7 @@
         .nav-item a { color: var(--text-color-light); text-decoration: none; font-size: 1.1rem; font-weight: 700; padding: 5px 10px; border-radius: 4px; transition: background-color 0.3s ease; cursor: pointer; }
         .nav-item a:hover, .nav-item a.active { background-color: var(--accent-color); }
         .page-content { display: block; }
-        .hero-parallax { background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80'); min-height: 85vh; background-position: center; background-repeat: no-repeat; background-size: cover; position: relative; display: flex; justify-content: center; align-items: center; text-align: center; color: var(--text-color-light); }
+        .hero-parallax { background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format=fit=crop&w=1770&q=80'); min-height: 85vh; background-position: center; background-repeat: no-repeat; background-size: cover; position: relative; display: flex; justify-content: center; align-items: center; text-align: center; color: var(--text-color-light); }
         .hero-parallax::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); }
         .hero-content { position: relative; z-index: 1; max-width: 800px; padding: 2rem; }
         .hero-title { font-family: var(--font-heading); font-size: 4rem; margin-bottom: 1rem; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
@@ -55,7 +55,7 @@
         .total-time-widget p { margin: 0; font-size: 1.75rem; font-weight: 700; }
         
         /* --- Teach Mode Styles --- */
-        .teach-view { display: none; height: calc(100vh - 120px); transition: opacity 0.5s, transform 0.5s; }
+        .teach-view { display: none; height: calc(100vh - 120px); transition: opacity 0.5s, transform 0.5s; position: absolute; top: 120px; left: 0; right: 0; }
         .teach-view-container { display: flex; width: 100%; height: 100%; padding-left: 100px; position: relative; background: #fff; }
         .resizer { width: 10px; background: var(--border-color); cursor: col-resize; z-index: 10; }
         .teach-panel { height: 100%; padding: 2rem; overflow-y: auto; }
@@ -74,7 +74,7 @@
         .stop-teaching-btn { position: fixed; bottom: 2rem; right: 2rem; background-color: var(--stop-color); color: white; border: none; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; transform: scale(0); opacity: 0; z-index: 1100; }
         .stop-teaching-btn:hover { background-color: var(--stop-color-hover); }
 
-        /* --- NEW, ROBUST TIME BAR STYLES --- */
+        /* Time Bar Styles */
         .time-controls-container { position: absolute; top: 0; left: 0; width: 100px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 1rem 0; background: var(--primary-light); border-right: 1px solid var(--border-color); z-index: 20; }
         #teach-time-display { font-weight: 700; font-size: 1.1rem; text-align: center; height: 40px; }
         .timer-controls button { background: none; border: none; font-size: 2.5rem; cursor: pointer; color: var(--primary-dark); transition: color 0.3s; height: 50px; }
@@ -85,7 +85,7 @@
         .time-bar-fill { position: absolute; width: 100%; background: var(--teach-color); border-radius: 10px; }
         .time-bar-handle { position: absolute; left: 50%; transform: translate(-50%, 50%); width: 25px; height: 10px; background: var(--primary-dark); border-radius: 3px; cursor: ns-resize; }
         
-        /* --- State Transitions --- */
+        /* State Transitions */
         #lesson-planner.teach-mode-active .lesson-form { opacity: 0; transform: translateY(-20px); pointer-events: none; height: 0; overflow: hidden; }
         #lesson-planner.teach-mode-active .teach-view { display: block; opacity: 1; transform: translateY(0); }
         #lesson-planner.teach-mode-active .stop-teaching-btn { transform: scale(1); opacity: 1; }
@@ -197,7 +197,7 @@
             });
             activitiesContainer.addEventListener('input', e => { if (e.target.classList.contains('activity-minutes')) updateTotalTime(); });
 
-            // --- REBUILT Teach Mode Functionality ---
+            // --- Teach Mode Functionality ---
             const teachLessonBtn = document.getElementById('teach-lesson-btn');
             const stopTeachingBtn = document.getElementById('stop-teaching-btn');
             const staticInfoPanel = document.getElementById('static-info-panel');
@@ -224,23 +224,17 @@
             const updateUI = () => {
                 const progress = totalLessonSeconds > 0 ? (currentSeconds / totalLessonSeconds) : 0;
                 
-                // 1. Update Time Display based on mode
                 const totalTimeFormatted = formatTime(totalLessonSeconds);
                 if (timerMode === 'timer') {
                     const remainingSeconds = totalLessonSeconds - currentSeconds;
                     teachTimeDisplay.textContent = formatTime(remainingSeconds);
-                } else { // Stopwatch mode
-                    teachTimeDisplay.innerHTML = `${formatTime(currentSeconds)} / ${totalTimeFormatted}`;
-                }
-
-                // 2. Update Time Bar Fill and Handle
-                if (timerMode === 'timer') {
                     timeBarFill.style.height = `${(1 - progress) * 100}%`;
                     timeBarFill.style.bottom = 'auto';
                     timeBarFill.style.top = '0';
                     timeBarHandle.style.top = `calc(${(1 - progress) * 100}% - 5px)`;
                     timeBarHandle.style.bottom = 'auto';
-                } else { // Stopwatch mode
+                } else {
+                    teachTimeDisplay.innerHTML = `${formatTime(currentSeconds)} / ${totalTimeFormatted}`;
                     timeBarFill.style.height = `${progress * 100}%`;
                     timeBarFill.style.top = 'auto';
                     timeBarFill.style.bottom = '0';
@@ -248,11 +242,10 @@
                     timeBarHandle.style.top = 'auto';
                 }
 
-                // 3. Update Active Activity
                 let activeActivityFound = false;
                 activitiesData.forEach((activity, index) => {
                     const activityEl = document.getElementById(`display-activity-${index}`);
-                    if (currentSeconds >= activity.startTime && currentSeconds < activity.endTime) {
+                    if (activityEl && currentSeconds >= activity.startTime && currentSeconds < activity.endTime) {
                         if (!activityEl.classList.contains('is-active')) {
                             document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
                             activityEl.classList.add('is-active');
@@ -261,20 +254,19 @@
                         activeActivityFound = true;
                     }
                 });
-                if (!activeActivityFound && currentSeconds >= totalLessonSeconds) {
-                     const lastActivity = document.getElementById(`display-activity-${activitiesData.length - 1}`);
-                    if (lastActivity && !lastActivity.classList.contains('is-active')) {
-                        document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
-                        lastActivity.classList.add('is-active');
-                        activitiesDisplayScroller.style.transform = `translateY(-${lastActivity.offsetTop}px)`;
+                if (!activeActivityFound) {
+                    document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
+                    if (currentSeconds >= totalLessonSeconds && activitiesData.length > 0) {
+                        const lastActivity = document.getElementById(`display-activity-${activitiesData.length - 1}`);
+                        if (lastActivity) lastActivity.classList.add('is-active');
+                    } else {
+                         activitiesDisplayScroller.style.transform = `translateY(0px)`;
                     }
-                } else if (!activeActivityFound) {
-                     document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
                 }
             };
             
             const startTimer = () => {
-                if (!isPaused) return;
+                if (!isPaused || currentSeconds >= totalLessonSeconds) return;
                 isPaused = false;
                 playPauseBtn.innerHTML = '&#9208;'; // Pause icon
                 timerInterval = setInterval(() => {
@@ -293,11 +285,22 @@
                 timerInterval = null;
                 playPauseBtn.innerHTML = '&#9658;'; // Play icon
             };
+            
+            // NEW: The dedicated reset function
+            const resetTeachMode = () => {
+                stopTimer();
+                currentSeconds = 0;
+                updateUI();
+            };
 
             playPauseBtn.addEventListener('click', () => isPaused ? startTimer() : stopTimer());
 
             document.querySelectorAll('input[name="timer-mode"]').forEach(radio => {
-                radio.addEventListener('change', (e) => { timerMode = e.target.value; updateUI(); });
+                radio.addEventListener('change', (e) => { 
+                    timerMode = e.target.value;
+                    // This is the crucial fix: reset everything when the mode changes.
+                    resetTeachMode();
+                });
             });
 
             teachLessonBtn.addEventListener('click', () => {
@@ -317,12 +320,10 @@
                 });
                 totalLessonSeconds = cumulativeTime;
                 
-                staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
+                staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N-A'}</p></div>`;
                 activitiesDisplayScroller.innerHTML = activitiesData.map((act, index) => `<div class="activity-display-item" id="display-activity-${index}"><h4>${act.name} <span>(${act.minutes} min)</span></h4><p>${act.notes||' '}</p></div>`).join('');
                 
-                stopTimer();
-                currentSeconds = 0;
-                updateUI();
+                resetTeachMode(); // Use the reset function here for consistency
                 lessonPlannerPage.classList.add('teach-mode-active');
             });
             
@@ -331,7 +332,6 @@
                 stopTimer();
             });
 
-            // --- Draggable Elements Logic ---
             const handleDrag = (el, onDragMove) => {
                 let isDragging = false;
                 const onMouseDown = e => { isDragging = true; onDragMove(e); };
@@ -347,7 +347,7 @@
                 const container = leftPanel.parentElement;
                 const newLeftWidth = e.clientX - container.getBoundingClientRect().left;
                  if (newLeftWidth > 200 && newLeftWidth < container.offsetWidth - 300) {
-                    leftPanel.style.flexBasis = `${newLeftWidth - 100}px`; // Adjust for time controls width
+                    leftPanel.style.flexBasis = `${newLeftWidth - 100}px`;
                 }
             });
 
