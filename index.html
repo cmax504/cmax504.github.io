@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- (1) The title at the top of the webpage -->
     <title>The Humanist's Toolkit</title>
 
     <!-- Google Fonts for a professional look -->
@@ -12,7 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
-    <!-- (5) A combination of HTML CSS and JavaScript... -->
     <style>
         /* --- General Styling & Resets --- */
         :root {
@@ -24,26 +21,16 @@
             --font-heading: 'Playfair Display', serif;
             --font-body: 'Lato', sans-serif;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
         body {
             font-family: var(--font-body);
             line-height: 1.6;
             background-color: var(--primary-light);
             color: var(--text-color-dark);
-            overflow-x: hidden; /* Prevents horizontal scrollbar */
+            overflow-x: hidden;
         }
-
-        /* --- (4) Navigation Bar --- */
+        /* --- Navigation Bar --- */
         .navbar {
             background-color: var(--primary-dark);
             position: fixed;
@@ -53,18 +40,13 @@
             padding: 1rem 0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
         .nav-container {
             display: flex;
             justify-content: center;
             align-items: center;
             list-style: none;
         }
-
-        .nav-item {
-            margin: 0 20px;
-        }
-
+        .nav-item { margin: 0 20px; }
         .nav-item a {
             color: var(--text-color-light);
             text-decoration: none;
@@ -73,17 +55,16 @@
             padding: 5px 10px;
             border-radius: 4px;
             transition: background-color 0.3s ease, color 0.3s ease;
+            cursor: pointer; /* Important for non-link elements */
         }
-
         .nav-item a:hover, .nav-item a.active {
             background-color: var(--accent-color);
             color: var(--text-color-light);
         }
-        
-        /* --- Hero Section with Parallax Background --- */
+        /* --- Hero Section with Parallax Background (Part of Home Page) --- */
         .hero-parallax {
-            background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80');
-            min-height: 85vh; /* Takes up 85% of the viewport height */
+            background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format=fit=crop&w=1770&q=80');
+            min-height: 100vh;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
@@ -93,10 +74,7 @@
             align-items: center;
             text-align: center;
             color: var(--text-color-light);
-            padding-top: 60px; /* Offset for the fixed navbar */
         }
-
-        /* Dark overlay for text readability */
         .hero-parallax::before {
             content: '';
             position: absolute;
@@ -106,15 +84,12 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
         }
-
         .hero-content {
-            position: relative; /* Sits on top of the overlay */
+            position: relative;
             z-index: 1;
             max-width: 800px;
             padding: 2rem;
         }
-        
-        /* --- (1) Title & (2) Description Styling --- */
         .hero-title {
             font-family: var(--font-heading);
             font-size: 4rem;
@@ -122,33 +97,32 @@
             margin-bottom: 1rem;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
         }
-
         .hero-description {
             font-size: 1.25rem;
             font-weight: 300;
             max-width: 600px;
             margin: 0 auto;
         }
-
-        /* --- Main Content Area --- */
+        /* --- Content Area for Lesson Planner page --- */
         .content-area {
-            padding: 4rem 2rem;
+            padding: 120px 2rem 4rem; /* Top padding to clear the fixed navbar */
             background-color: #ffffff;
-            min-height: 50vh; 
+            min-height: calc(100vh - 73px); /* Fill screen height minus the footer */
         }
-
         .content-container {
             max-width: 900px;
             margin: 0 auto;
         }
-
-        /* --- (3) Footer --- */
+        /* --- Footer (Visible on all "pages") --- */
         .site-footer {
             background-color: var(--primary-dark);
             color: rgba(255, 255, 255, 0.7);
             text-align: center;
             padding: 1.5rem;
             font-size: 0.9rem;
+            /* Added to ensure it's at the bottom for the home page */
+            position: relative;
+            z-index: 2;
         }
     </style>
 </head>
@@ -156,39 +130,77 @@
 
     <nav class="navbar">
         <ul class="nav-container">
-            <li class="nav-item"><a href="#" class="active">Home</a></li>
-            <li class="nav-item"><a href="#">Lesson Planner</a></li>
+            <!-- These links now have a 'data-page' attribute to tell the JavaScript which section to show -->
+            <li class="nav-item"><a class="nav-link active" data-page="home">Home</a></li>
+            <li class="nav-item"><a class="nav-link" data-page="lesson-planner">Lesson Planner</a></li>
         </ul>
     </nav>
 
-    <header class="hero-parallax" id="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">The Humanist's Toolkit</h1>
-            <p class="hero-description">
-                Though the word "Humanist" is in the title, this free resource is designed to assist researchers and educators of all sorts. Explore and enjoy! Much more to come!
-            </p>
-        </div>
-    </header>
+    <!-- PAGE 1: The Home Page Content -->
+    <main id="home" class="page-content">
+        <header class="hero-parallax" id="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">The Humanist's Toolkit</h1>
+                <p class="hero-description">
+                    Though the word "Humanist" is in the title, this free resource is designed to assist researchers and educators of all sorts. Explore and enjoy! Much more to come!
+                </p>
+            </div>
+        </header>
+    </main>
 
-    <main class="content-area">
-        <div class="content-container">
-            <h2>Welcome</h2>
-            <p>This is the main content area of your site. As you add more sections, articles, or resources, they will appear here. The space above is designed to be an impactful introduction to your toolkit. Scrolling down reveals the rest of your valuable content.</p>
+    <!-- PAGE 2: The Lesson Planner Content (Initially hidden) -->
+    <main id="lesson-planner" class="page-content" style="display: none;">
+        <div class="content-area">
+            <div class="content-container">
+                <h1>Lesson Planner</h1>
+                <p>This is the Lesson Planner page. Content will be added here soon.</p>
+            </div>
         </div>
     </main>
 
+    <!-- The footer is outside the page containers, so it's always visible -->
     <footer class="site-footer">
         <p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Parallax Effect Script (for the hero section) ---
             const hero = document.getElementById('hero');
+            if (hero) {
+                window.addEventListener('scroll', function() {
+                    let scrollPosition = window.pageYOffset;
+                    hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+                });
+            }
 
-            window.addEventListener('scroll', function() {
-                let scrollPosition = window.pageYOffset;
-                // The 0.5 factor makes the background move at half the speed of the scroll, creating the parallax effect.
-                hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+            // --- Page Navigation Script ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page-content');
+
+            // Add a click listener to each navigation link
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+
+                    // 1. Hide all pages
+                    pages.forEach(page => {
+                        page.style.display = 'none';
+                    });
+
+                    // 2. Show the target page
+                    const targetPage = document.getElementById(pageId);
+                    if (targetPage) {
+                        targetPage.style.display = 'block';
+                    }
+
+                    // 3. Update the 'active' class on the navigation links
+                    navLinks.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 4. Scroll to the top of the page
+                    window.scrollTo(0, 0);
+                });
             });
         });
     </script>
