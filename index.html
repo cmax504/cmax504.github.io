@@ -55,21 +55,26 @@
             padding: 5px 10px;
             border-radius: 4px;
             transition: background-color 0.3s ease, color 0.3s ease;
-            cursor: pointer; /* Important for non-link elements */
+            cursor: pointer;
         }
         .nav-item a:hover, .nav-item a.active {
             background-color: var(--accent-color);
             color: var(--text-color-light);
         }
-        /* --- Hero Section with Parallax Background (Part of Home Page) --- */
+        /* --- Page Containers --- */
+        .page-content {
+            display: block; /* Default state */
+        }
+        /* --- Home Page: Hero Section Styling --- */
         .hero-parallax {
-            background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format=fit=crop&w=1770&q=80');
-            min-height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80');
+            min-height: 100vh; /* This is key to the original look */
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
             position: relative;
             display: flex;
+            flex-direction: column; /* To stack content and footer */
             justify-content: center;
             align-items: center;
             text-align: center;
@@ -89,6 +94,10 @@
             z-index: 1;
             max-width: 800px;
             padding: 2rem;
+            flex-grow: 1; /* Allows content to take up space */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .hero-title {
             font-family: var(--font-heading);
@@ -103,26 +112,29 @@
             max-width: 600px;
             margin: 0 auto;
         }
-        /* --- Content Area for Lesson Planner page --- */
+        /* --- Lesson Planner Page: Content Area Styling --- */
         .content-area {
             padding: 120px 2rem 4rem; /* Top padding to clear the fixed navbar */
             background-color: #ffffff;
-            min-height: calc(100vh - 73px); /* Fill screen height minus the footer */
+            min-height: 100vh; /* Ensures footer is at the bottom */
+            display: flex;
+            flex-direction: column;
         }
         .content-container {
             max-width: 900px;
             margin: 0 auto;
+            flex-grow: 1; /* Pushes footer down */
         }
-        /* --- Footer (Visible on all "pages") --- */
+        /* --- Footer (Styles apply to both footers) --- */
         .site-footer {
             background-color: var(--primary-dark);
             color: rgba(255, 255, 255, 0.7);
             text-align: center;
             padding: 1.5rem;
             font-size: 0.9rem;
-            /* Added to ensure it's at the bottom for the home page */
-            position: relative;
-            z-index: 2;
+            width: 100%;
+            position: relative; /* Needed for z-index on hero */
+            z-index: 1;
         }
     </style>
 </head>
@@ -130,7 +142,6 @@
 
     <nav class="navbar">
         <ul class="nav-container">
-            <!-- These links now have a 'data-page' attribute to tell the JavaScript which section to show -->
             <li class="nav-item"><a class="nav-link active" data-page="home">Home</a></li>
             <li class="nav-item"><a class="nav-link" data-page="lesson-planner">Lesson Planner</a></li>
         </ul>
@@ -145,6 +156,9 @@
                     Though the word "Humanist" is in the title, this free resource is designed to assist researchers and educators of all sorts. Explore and enjoy! Much more to come!
                 </p>
             </div>
+            <footer class="site-footer">
+                <p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p>
+            </footer>
         </header>
     </main>
 
@@ -155,13 +169,11 @@
                 <h1>Lesson Planner</h1>
                 <p>This is the Lesson Planner page. Content will be added here soon.</p>
             </div>
+            <footer class="site-footer">
+                <p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p>
+            </footer>
         </div>
     </main>
-
-    <!-- The footer is outside the page containers, so it's always visible -->
-    <footer class="site-footer">
-        <p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p>
-    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -169,8 +181,11 @@
             const hero = document.getElementById('hero');
             if (hero) {
                 window.addEventListener('scroll', function() {
-                    let scrollPosition = window.pageYOffset;
-                    hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+                    // Only apply parallax if the home page is visible
+                    if (document.getElementById('home').style.display !== 'none') {
+                        let scrollPosition = window.pageYOffset;
+                        hero.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+                    }
                 });
             }
 
@@ -178,7 +193,6 @@
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page-content');
 
-            // Add a click listener to each navigation link
             navLinks.forEach(link => {
                 link.addEventListener('click', function() {
                     const pageId = this.getAttribute('data-page');
