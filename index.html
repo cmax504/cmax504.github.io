@@ -74,7 +74,7 @@
         .stop-teaching-btn { position: fixed; bottom: 2rem; right: 2rem; background-color: var(--stop-color); color: white; border: none; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; transform: scale(0); opacity: 0; z-index: 1100; }
         .stop-teaching-btn:hover { background-color: var(--stop-color-hover); }
 
-        /* Time Bar Styles */
+        /* --- Time Bar Styles --- */
         .time-controls-container { position: absolute; top: 0; left: 0; width: 100px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 1rem 0; background: var(--primary-light); border-right: 1px solid var(--border-color); z-index: 20; }
         #teach-time-display { font-weight: 700; font-size: 1.1rem; text-align: center; height: 40px; }
         .timer-controls button { background: none; border: none; font-size: 2.5rem; cursor: pointer; color: var(--primary-dark); transition: color 0.3s; height: 50px; }
@@ -82,7 +82,7 @@
         .timer-mode-switcher { margin-top: auto; font-size: 0.9rem; }
         .timer-mode-switcher label { margin: 0.5rem; cursor: pointer; display: block; text-align: center; }
         .time-bar-container { position: relative; width: 15px; flex-grow: 1; background: #ddd; border-radius: 10px; margin: 1rem 0; cursor: pointer; }
-        .time-bar-fill { position: absolute; width: 100%; background: var(--teach-color); border-radius: 10px; }
+        .time-bar-fill { position: absolute; width: 100%; background: var(--teach-color); border-radius: 10px; bottom: 0; } /* Always anchored at the bottom */
         .time-bar-handle { position: absolute; left: 50%; transform: translate(-50%, 50%); width: 25px; height: 10px; background: var(--primary-dark); border-radius: 3px; cursor: ns-resize; }
         
         /* State Transitions */
@@ -228,18 +228,14 @@
                 if (timerMode === 'timer') {
                     const remainingSeconds = totalLessonSeconds - currentSeconds;
                     teachTimeDisplay.textContent = formatTime(remainingSeconds);
-                    timeBarFill.style.height = `${(1 - progress) * 100}%`;
-                    timeBarFill.style.bottom = 'auto';
-                    timeBarFill.style.top = '0';
-                    timeBarHandle.style.top = `calc(${(1 - progress) * 100}% - 5px)`;
-                    timeBarHandle.style.bottom = 'auto';
-                } else {
+                    const fillHeight = (1 - progress) * 100;
+                    timeBarFill.style.height = `${fillHeight}%`;
+                    timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`;
+                } else { // Stopwatch mode
                     teachTimeDisplay.innerHTML = `${formatTime(currentSeconds)} / ${totalTimeFormatted}`;
-                    timeBarFill.style.height = `${progress * 100}%`;
-                    timeBarFill.style.top = 'auto';
-                    timeBarFill.style.bottom = '0';
-                    timeBarHandle.style.bottom = `calc(${progress * 100}% - 5px)`;
-                    timeBarHandle.style.top = 'auto';
+                    const fillHeight = progress * 100;
+                    timeBarFill.style.height = `${fillHeight}%`;
+                    timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`;
                 }
 
                 let activeActivityFound = false;
@@ -255,12 +251,20 @@
                     }
                 });
                 if (!activeActivityFound) {
-                    document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
+                     const activeElements = document.querySelectorAll('.activity-display-item.is-active');
+                    if (activeElements.length > 0 || currentSeconds < totalLessonSeconds) {
+                        activeElements.forEach(el => el.classList.remove('is-active'));
+                        activitiesDisplayScroller.style.transform = `translateY(0px)`;
+                        if (activitiesData.length > 0 && currentSeconds < activitiesData[0].startTime) {
+                             document.getElementById('display-activity-0').classList.add('is-active');
+                        }
+                    }
                     if (currentSeconds >= totalLessonSeconds && activitiesData.length > 0) {
                         const lastActivity = document.getElementById(`display-activity-${activitiesData.length - 1}`);
-                        if (lastActivity) lastActivity.classList.add('is-active');
-                    } else {
-                         activitiesDisplayScroller.style.transform = `translateY(0px)`;
+                        if (lastActivity && !lastActivity.classList.contains('is-active')) {
+                            document.querySelectorAll('.activity-display-item.is-active').forEach(el => el.classList.remove('is-active'));
+                            lastActivity.classList.add('is-active');
+                        }
                     }
                 }
             };
@@ -286,7 +290,6 @@
                 playPauseBtn.innerHTML = '&#9658;'; // Play icon
             };
             
-            // NEW: The dedicated reset function
             const resetTeachMode = () => {
                 stopTimer();
                 currentSeconds = 0;
@@ -298,7 +301,6 @@
             document.querySelectorAll('input[name="timer-mode"]').forEach(radio => {
                 radio.addEventListener('change', (e) => { 
                     timerMode = e.target.value;
-                    // This is the crucial fix: reset everything when the mode changes.
                     resetTeachMode();
                 });
             });
@@ -320,10 +322,10 @@
                 });
                 totalLessonSeconds = cumulativeTime;
                 
-                staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N-A'}</p></div>`;
+                staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
                 activitiesDisplayScroller.innerHTML = activitiesData.map((act, index) => `<div class="activity-display-item" id="display-activity-${index}"><h4>${act.name} <span>(${act.minutes} min)</span></h4><p>${act.notes||' '}</p></div>`).join('');
                 
-                resetTeachMode(); // Use the reset function here for consistency
+                resetTeachMode();
                 lessonPlannerPage.classList.add('teach-mode-active');
             });
             
