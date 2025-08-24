@@ -143,25 +143,34 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Page Navigation Script ---
+            // --- ROBUST NAVIGATION LOGIC ---
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page-content');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    const pageId = this.dataset.page; if (!pageId) return;
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    e.target.classList.add('active');
-                    const parentNavItem = e.target.closest('.nav-item');
-                    if (parentNavItem.querySelector('.dropdown')) { parentNavItem.querySelector('a[data-page="lesson-planner"]').classList.add('active'); }
-                    pages.forEach(page => page.style.display = 'none');
-                    document.getElementById(pageId).style.display = 'block';
-                    if (pageId === 'my-lessons') { loadLessonsIntoView(); } 
-                    else if (pageId === 'lesson-planner' && !e.target.closest('.dropdown')) { 
-                        document.getElementById('current-lesson-name').value = ''; document.querySelector('.lesson-form').reset();
-                        activitiesContainer.innerHTML = ''; updateTotalTime();
-                    }
-                });
-            });
+            const navigateToPage = (pageId, isNewLesson = false) => {
+                if (!pageId) return;
+                const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
+                if (!targetLink) return;
+
+                navLinks.forEach(l => l.classList.remove('active'));
+                targetLink.classList.add('active');
+                const parentNavItem = targetLink.closest('.nav-item');
+                if (parentNavItem.querySelector('.dropdown')) { parentNavItem.querySelector('a[data-page="lesson-planner"]').classList.add('active'); }
+                
+                pages.forEach(page => page.style.display = 'none');
+                document.getElementById(pageId).style.display = 'block';
+
+                if (pageId === 'my-lessons') { loadLessonsIntoView(); } 
+                else if (pageId === 'lesson-planner' && isNewLesson) { 
+                    document.getElementById('current-lesson-name').value = ''; 
+                    document.querySelector('.lesson-form').reset();
+                    activitiesContainer.innerHTML = '';
+                    updateTotalTime();
+                }
+            };
+            navLinks.forEach(link => { link.addEventListener('click', function(e) {
+                const isNew = this.dataset.page === 'lesson-planner' && !this.closest('.dropdown');
+                navigateToPage(this.dataset.page, isNew);
+            }); });
 
             // --- Parallax Effect Script ---
             const hero = document.getElementById('hero');
@@ -171,11 +180,11 @@
             const lessonPlannerPage = document.getElementById('lesson-planner'); const addActivityBtn = document.getElementById('add-activity-btn'); const activitiesContainer = document.getElementById('activities-container'); const totalTimeDisplay = document.getElementById('total-time-display');
             const updateTotalTime = () => { let totalMinutes = 0; activitiesContainer.querySelectorAll('.activity-minutes').forEach(input => { totalMinutes += parseInt(input.value, 10) || 0; }); totalTimeDisplay.textContent = `${totalMinutes} Minutes`; return totalMinutes; };
             const updateSubActivityLabels = (activityItem) => { activityItem.querySelectorAll('.sub-activity-item').forEach((subItem, index) => { subItem.querySelector('.sub-activity-label').textContent = `Part ${index + 1}`; }); };
-            const createSubActivityElement = (minutes = '', notes = '') => { return `<div class="sub-activity-item"><div class="sub-activity-label"></div><div class="sub-activity-content"><div class="sub-activity-header"><div class="form-group minutes-group"><label>Minutes</label><input type="number" class="activity-minutes" value="${minutes}" min="0"></div></div><div class="form-group"><label>Notes</label><textarea>${notes}</textarea></div></div><button class="delete-sub-activity-btn">&times;</button></div>`; };
+            const createSubActivityElement = (minutes = '', notes = '') => { return `<div class="sub-activity-item"><div class="sub-activity-label"></div><div class="sub-activity-content"><div class="sub-activity-header"><div class="form-group minutes-group"><label>Minutes</label><input type="number" class="activity-minutes" value="${minutes}" min="0"></div></div><div class="form-group"><label>Notes</label><textarea>${notes}</textarea></div></div><button type="button" class="delete-sub-activity-btn">&times;</button></div>`; };
             const createActivityElement = (name = '', subActivities = [{ minutes: '', notes: '' }]) => {
                 const activityEl = document.createElement('div'); activityEl.className = 'activity-item';
                 const subActivitiesHtml = subActivities.map(sub => createSubActivityElement(sub.minutes, sub.notes)).join('');
-                activityEl.innerHTML = `<button class="delete-activity-btn">&times;</button><div class="activity-item-header"><div class="form-group"><label>Activity Name</label><input type="text" class="activity-name" value="${name}"></div></div><div class="sub-activity-container">${subActivitiesHtml}</div><div class="activity-footer"><button type="button" class="btn divide-activity-btn">Divide</button></div>`;
+                activityEl.innerHTML = `<button type="button" class="delete-activity-btn">&times;</button><div class="activity-item-header"><div class="form-group"><label>Activity Name</label><input type="text" class="activity-name" value="${name}"></div></div><div class="sub-activity-container">${subActivitiesHtml}</div><div class="activity-footer"><button type="button" class="btn divide-activity-btn">Divide</button></div>`;
                 updateSubActivityLabels(activityEl); return activityEl;
             };
             addActivityBtn.addEventListener('click', () => { const newActivity = createActivityElement(); newActivity.style.cssText = 'max-height:0; opacity:0; padding-top:0; padding-bottom:0; margin-bottom:0;'; activitiesContainer.appendChild(newActivity); setTimeout(() => { newActivity.style.cssText = ''; }, 10); });
@@ -183,19 +192,13 @@
             activitiesContainer.addEventListener('click', e => {
                 if (e.target.classList.contains('delete-activity-btn')) { const activityItem = e.target.closest('.activity-item'); activityItem.classList.add('deleting'); setTimeout(() => { activityItem.remove(); updateTotalTime(); }, 500); }
                 else if (e.target.classList.contains('delete-sub-activity-btn')) {
-                    const subActivityItem = e.target.closest('.sub-activity-item');
-                    const parentActivity = subActivityItem.closest('.activity-item');
-                    if (parentActivity.querySelectorAll('.sub-activity-item').length > 1) {
-                        subActivityItem.remove();
-                        updateSubActivityLabels(parentActivity);
-                        updateTotalTime();
-                    } else { alert("You cannot delete the last part of an activity. Delete the whole activity instead."); }
+                    const subActivityItem = e.target.closest('.sub-activity-item'); const parentActivity = subActivityItem.closest('.activity-item');
+                    if (parentActivity.querySelectorAll('.sub-activity-item').length > 1) { subActivityItem.remove(); updateSubActivityLabels(parentActivity); updateTotalTime(); } 
+                    else { alert("You cannot delete the last part of an activity. Delete the whole activity instead."); }
                 }
                 else if (e.target.classList.contains('divide-activity-btn')) {
-                    const parentActivity = e.target.closest('.activity-item');
-                    const subContainer = parentActivity.querySelector('.sub-activity-container');
-                    subContainer.insertAdjacentHTML('beforeend', createSubActivityElement());
-                    updateSubActivityLabels(parentActivity);
+                    const parentActivity = e.target.closest('.activity-item'); const subContainer = parentActivity.querySelector('.sub-activity-container');
+                    subContainer.insertAdjacentHTML('beforeend', createSubActivityElement()); updateSubActivityLabels(parentActivity);
                 }
             });
 
@@ -222,7 +225,7 @@
                     const data = JSON.parse(localStorage.getItem(`lesson_${lessonName}`)); if (!data) return;
                     document.getElementById('course-name').value = data.courseName; document.getElementById('unit-name').value = data.unitName; document.getElementById('course-objectives').value = data.courseObjectives; document.getElementById('learning-goals').value = data.learningGoals; currentLessonNameInput.value = lessonName;
                     activitiesContainer.innerHTML = ''; data.activities.forEach(act => { const el = createActivityElement(act.name, act.subActivities); activitiesContainer.appendChild(el); });
-                    updateTotalTime(); document.querySelector('.nav-link[data-page="lesson-planner"]').click();
+                    updateTotalTime(); navigateToPage('lesson-planner', false);
                 } else if (e.target.classList.contains('btn-delete')) {
                     if (confirm(`Are you sure you want to delete the lesson "${lessonName}"? This cannot be undone.`)) { localStorage.removeItem(`lesson_${lessonName}`); loadLessonsIntoView(); }
                 } else if (e.target.classList.contains('btn-duplicate')) {
@@ -242,7 +245,7 @@
                 const timerMode = document.querySelector('input[name="timer-mode"]:checked').value; const progress = totalLessonSeconds > 0 ? (currentSeconds/totalLessonSeconds) : 0; const totalTimeFormatted = formatTime(totalLessonSeconds);
                 if (timerMode === 'timer') { const remainingSeconds = totalLessonSeconds - currentSeconds; teachTimeDisplay.textContent = formatTime(remainingSeconds); const fillHeight = (1 - progress) * 100; timeBarFill.style.height = `${fillHeight}%`; timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`; }
                 else { teachTimeDisplay.innerHTML = `${formatTime(currentSeconds)} / ${totalTimeFormatted}`; const fillHeight = progress * 100; timeBarFill.style.height = `${fillHeight}%`; timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`; }
-                document.querySelectorAll('.sub-activity-display-item.is-active').forEach(el => el.classList.remove('is-active')); document.querySelectorAll('.activity-display-item.is-active-parent').forEach(el => el.classList.remove('is-active-parent'));
+                document.querySelectorAll('.sub-activity-display-item.is-active, .activity-display-item.is-active-parent').forEach(el => el.classList.remove('is-active', 'is-active-parent'));
                 for (const subAct of teachModeActivities) {
                     if (currentSeconds >= subAct.startTime && currentSeconds < subAct.endTime) {
                         const subActEl = document.getElementById(subAct.id);
