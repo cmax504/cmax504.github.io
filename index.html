@@ -14,6 +14,7 @@
             --accent-color-hover: #2980b9; --teach-color: #27ae60; --teach-color-hover: #229954;
             --stop-color: #c0392b; --stop-color-hover: #a93226; --save-color: #8e44ad; --save-color-hover: #7d3c98;
             --duplicate-color: #16a085; --duplicate-color-hover: #117a65; --divide-color: #e67e22; --divide-color-hover: #d35400;
+            --folder-color: #34495e; --folder-color-hover: #2c3e50;
             --text-color-dark: #34495e; --text-color-light: #ffffff; --border-color: #bdc3c7;
             --font-heading: 'Playfair Display', serif; --font-body: 'Lato', sans-serif;
         }
@@ -67,6 +68,7 @@
         .delete-activity-btn:hover { transform: scale(1.2); color: var(--stop-color-hover); }
         .delete-sub-activity-btn { position: absolute; top: 1rem; right: 0; background: none; border: none; font-size: 1.2rem; color: var(--stop-color); cursor: pointer; transition: transform 0.2s ease, color 0.2s ease; }
         .delete-sub-activity-btn:hover { transform: scale(1.2); color: var(--stop-color-hover); }
+        .activity-item[data-sub-activity-count="1"] .sub-activity-label, .activity-item[data-sub-activity-count="1"] .delete-sub-activity-btn { display: none; }
         
         /* Teach Mode, My Lessons, Modals */
         .teach-view { display: none; height: calc(100vh - 120px); transition: opacity 0.5s, transform 0.5s; position: absolute; top: 120px; left: 0; right: 0; }
@@ -81,11 +83,9 @@
         .sub-activity-display-item:not(:first-child) { border-top: 1px dashed var(--border-color); }
         .sub-activity-display-item.is-active { opacity: 1; transform: scale(1); }
         .activity-display-item.is-active-parent { box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); border-color: var(--accent-color); }
-        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; }
-        .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; } .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
         .activity-display-item-header .time-display { font-size: 1.1rem; color: #777; white-space: nowrap; font-style: normal; }
-        .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; }
-        .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
+        .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; } .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
         .activity-progress-bar { height: 6px; background-color: #ddd; border-radius: 3px; margin-bottom: 1rem; overflow: hidden; display: none; }
         .activity-progress-bar-fill { width: 0%; height: 100%; background-color: var(--duplicate-color); border-radius: 3px; transition: width 0.2s linear; }
         #lesson-planner.progress-bars-active .activity-progress-bar { display: block; }
@@ -180,11 +180,8 @@
             const updateTotalTime = () => { let totalMinutes = 0; activitiesContainer.querySelectorAll('.activity-minutes').forEach(input => { totalMinutes += parseInt(input.value, 10) || 0; }); totalTimeDisplay.textContent = `${totalMinutes} Minutes`; return totalMinutes; };
             const updateActivityPartVisibility = (activityItem) => {
                 const subItems = activityItem.querySelectorAll('.sub-activity-item');
-                subItems.forEach((subItem, index) => {
-                    subItem.querySelector('.sub-activity-label').style.display = subItems.length > 1 ? '' : 'none';
-                    subItem.querySelector('.delete-sub-activity-btn').style.display = subItems.length > 1 ? '' : 'none';
-                    subItem.querySelector('.sub-activity-label').textContent = `Part ${index + 1}`;
-                });
+                activityItem.dataset.subActivityCount = subItems.length;
+                subItems.forEach((subItem, index) => { subItem.querySelector('.sub-activity-label').textContent = `Part ${index + 1}`; });
             };
             const createSubActivityElement = (minutes = '', notes = '') => { return `<div class="sub-activity-item"><div class="sub-activity-label"></div><div class="sub-activity-content"><div class="sub-activity-header"><div class="form-group minutes-group"><label>Minutes</label><input type="number" class="activity-minutes" value="${minutes}" min="0"></div></div><div class="form-group"><label>Notes</label><textarea>${notes}</textarea></div></div><button type="button" class="delete-sub-activity-btn">&times;</button></div>`; };
             const createActivityElement = (name = '', subActivities = [{ minutes: '', notes: '' }]) => {
@@ -224,17 +221,9 @@
                 saveData(data); currentLessonNameInput.value = lessonName; saveModalOverlay.classList.remove('active');
                 popupMessage.classList.add('show'); setTimeout(() => popupMessage.classList.remove('show'), 2000);
             });
-            createFolderBtn.addEventListener('click', () => {
-                const folderName = prompt("Enter a name for the new folder:");
-                if(folderName && folderName.trim()){
-                    const data = getData(); const newId = generateId();
-                    data.folders[newId] = { id: newId, name: folderName.trim(), parentId: currentFolderId };
-                    saveData(data); renderMyLessons();
-                }
-            });
+            createFolderBtn.addEventListener('click', () => { const folderName = prompt("Enter a name for the new folder:"); if(folderName && folderName.trim()){ const data = getData(); const newId = generateId(); data.folders[newId] = { id: newId, name: folderName.trim(), parentId: currentFolderId }; saveData(data); renderMyLessons(); } });
             const renderMyLessons = () => {
-                const data = getData();
-                folderList.innerHTML = ''; lessonList.innerHTML = ''; breadcrumbNav.innerHTML = '';
+                const data = getData(); folderList.innerHTML = ''; lessonList.innerHTML = '';
                 let path = []; let parentId = currentFolderId;
                 while (parentId !== 'root' && data.folders[parentId]) { path.unshift({id: parentId, name: data.folders[parentId].name}); parentId = data.folders[parentId].parentId; }
                 path.unshift({id: 'root', name: 'My Lessons'});
