@@ -28,6 +28,7 @@
         .dropdown { display: none; position: absolute; top: 100%; left: 0; background-color: var(--primary-dark); list-style: none; padding: 0.5rem 0; border-radius: 0 0 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); min-width: 150px; }
         .nav-item:hover .dropdown { display: block; }
         .dropdown li a { padding: 0.5rem 1rem; width: 100%; text-align: left; }
+        .dropdown li a:hover { background-color: var(--accent-color); }
         .page-content { display: block; }
         .hero-parallax { background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format=fit=crop&w=1770&q=80'); min-height: 85vh; background-position: center; background-repeat: no-repeat; background-size: cover; position: relative; display: flex; justify-content: center; align-items: center; text-align: center; color: var(--text-color-light); }
         .hero-parallax::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); }
@@ -46,16 +47,25 @@
         .lesson-form input[type="text"], .lesson-form textarea, .lesson-form input[type="number"] { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; font-family: var(--font-body); transition: border-color 0.3s, box-shadow 0.3s; user-select: text;}
         .lesson-form input:focus, .lesson-form textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
         .lesson-form textarea { min-height: 120px; resize: vertical; }
-        #activities-container .activity-item { background-color: var(--primary-light); border-left: 4px solid var(--accent-color); padding: 1.5rem; margin-bottom: 1rem; border-radius: 4px; overflow: hidden; max-height: 500px; opacity: 1; transition: all 0.5s ease-in-out; }
+        #activities-container .activity-item { position: relative; background-color: var(--primary-light); border-left: 4px solid var(--accent-color); padding: 1.5rem; margin-bottom: 1rem; border-radius: 4px; transition: all 0.5s ease-in-out; }
+        #activities-container .activity-item.deleting { max-height: 0 !important; opacity: 0; padding: 0; margin: 0; }
         .activity-item-header { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
         .activity-item-header .form-group { flex-grow: 1; margin-bottom: 0; }
-        .activity-item-header .minutes-group input { width: 80px; }
+        .sub-activity-container { padding-left: 1rem; border-left: 2px dashed var(--border-color); }
+        .sub-activity-item { padding-top: 1rem; } .sub-activity-item:not(:first-child) { border-top: 1px solid var(--border-color); }
+        .sub-activity-header { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
+        .sub-activity-header .form-group { flex-grow: 1; margin-bottom: 0; }
+        .minutes-group input { width: 80px; }
+        .activity-footer { display: flex; justify-content: flex-end; margin-top: 1rem; }
+        .divide-activity-btn { font-size: 0.9rem; padding: 0.5rem 1rem; }
         .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .btn { padding: 1rem; color: white; border: none; border-radius: 4px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color 0.3s; }
         .save-lesson-btn { flex-grow: 1; background-color: var(--save-color); } .save-lesson-btn:hover { background-color: var(--save-color-hover); }
         .add-activity-btn { flex-grow: 1; background-color: var(--accent-color); } .add-activity-btn:hover { background-color: var(--accent-color-hover); }
         .teach-lesson-btn { flex-grow: 1; background-color: var(--teach-color); } .teach-lesson-btn:hover { background-color: var(--teach-color-hover); }
         .total-time-widget { position: sticky; top: 20px; float: right; background-color: var(--primary-dark); color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); text-align: center; z-index: 10; margin-bottom: 1rem;}
+        .delete-activity-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; font-size: 1.5rem; color: var(--stop-color); cursor: pointer; transition: transform 0.2s ease, color 0.2s ease; line-height: 1; }
+        .delete-activity-btn:hover { transform: scale(1.2); color: var(--stop-color-hover); }
         
         /* Teach Mode, My Lessons, Modals */
         .teach-view { display: none; height: calc(100vh - 120px); transition: opacity 0.5s, transform 0.5s; position: absolute; top: 120px; left: 0; right: 0; }
@@ -82,7 +92,7 @@
         .my-lessons-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
         .lesson-list-item { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; background: var(--primary-light); }
         .lesson-list-item h3 { font-family: var(--font-heading); color: var(--primary-dark); }
-        .lesson-list-item .actions { display: flex; gap: 1rem; }
+        .lesson-list-item .actions { display: flex; flex-wrap: wrap; gap: 1rem; }
         .lesson-list-item .btn-open { background-color: var(--teach-color); } .lesson-list-item .btn-open:hover { background-color: var(--teach-color-hover); }
         .lesson-list-item .btn-duplicate { background-color: var(--duplicate-color); } .lesson-list-item .btn-duplicate:hover { background-color: var(--duplicate-color-hover); }
         .lesson-list-item .btn-delete, .btn-delete-all { background-color: var(--stop-color); } .lesson-list-item .btn-delete:hover, .btn-delete-all:hover { background-color: var(--stop-color-hover); }
@@ -110,61 +120,17 @@
         </ul>
     </nav>
 
-    <main id="home" class="page-content">
-        <header class="hero-parallax" id="hero"><div class="hero-content"><h1 class="hero-title">The Humanist's Toolkit</h1><p class="hero-description">Though the word "Humanist" is in the title, this free resource is designed to assist researchers and educators of all sorts. Explore and enjoy! Much more to come!</p></div></header>
-        <section class="content-area" style="min-height: 40vh; background-color: #ffffff;"></section>
-        <footer class="site-footer"><p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p></footer>
-    </main>
+    <main id="home" class="page-content"><header class="hero-parallax" id="hero"><div class="hero-content"><h1 class="hero-title">The Humanist's Toolkit</h1><p class="hero-description">Though the word "Humanist" is in the title, this free resource is designed to assist researchers and educators of all sorts. Explore and enjoy! Much more to come!</p></div></header><section class="content-area" style="min-height: 40vh; background-color: #ffffff;"></section><footer class="site-footer"><p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p></footer></main>
 
     <main id="lesson-planner" class="page-content" style="display: none;">
         <div class="content-area">
-            <div class="form-view">
-                <form class="lesson-form">
-                    <div class="total-time-widget"><h3 >Total Lesson Time</h3><p id="total-time-display">0 Minutes</p></div>
-                    <input type="hidden" id="current-lesson-name" value="">
-                    <h1>Lesson Planner</h1>
-                    <div class="form-group"><label for="course-name">Course Name</label><input type="text" id="course-name"></div>
-                    <div class="form-group"><label for="unit-name">Unit Name</label><input type="text" id="unit-name"></div>
-                    <div class="form-group"><label for="course-objectives">Relevant Course Objectives</label><textarea id="course-objectives"></textarea></div>
-                    <div class="form-group"><label for="learning-goals">Learning Goals of the Lesson</label><textarea id="learning-goals"></textarea></div>
-                    <h2>Activities</h2>
-                    <div id="activities-container"></div>
-                    <div class="form-actions">
-                        <button type="button" class="btn save-lesson-btn" id="save-lesson-btn">Save Lesson</button>
-                        <button type="button" class="btn add-activity-btn" id="add-activity-btn">+ Add Activity</button>
-                        <button type="button" class="btn teach-lesson-btn" id="teach-lesson-btn">&#9658; Teach My Lesson</button>
-                    </div>
-                </form>
-            </div>
-            <div class="teach-view">
-                <div class="time-controls-container">
-                    <p id="teach-time-display">00:00 / 00:00</p>
-                    <div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div>
-                    <div class="time-bar-container" id="time-bar-container"><div class="time-bar-fill" id="time-bar-fill"></div><div class="time-bar-handle" id="time-bar-handle"></div></div>
-                    <div class="timer-mode-switcher"><label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label><label><input type="radio" name="timer-mode" value="timer"> Timer</label></div>
-                </div>
-                <div class="teach-view-container">
-                    <div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div>
-                    <div class="resizer" id="resizer"></div>
-                    <div class="teach-panel teach-view-right" id="static-info-panel"></div>
-                </div>
-            </div>
+            <div class="form-view"><form class="lesson-form"><div class="total-time-widget"><h3 >Total Lesson Time</h3><p id="total-time-display">0 Minutes</p></div><input type="hidden" id="current-lesson-name" value=""><h1>Lesson Planner</h1><div class="form-group"><label for="course-name">Course Name</label><input type="text" id="course-name"></div><div class="form-group"><label for="unit-name">Unit Name</label><input type="text" id="unit-name"></div><div class="form-group"><label for="course-objectives">Relevant Course Objectives</label><textarea id="course-objectives"></textarea></div><div class="form-group"><label for="learning-goals">Learning Goals of the Lesson</label><textarea id="learning-goals"></textarea></div><h2>Activities</h2><div id="activities-container"></div><div class="form-actions"><button type="button" class="btn save-lesson-btn" id="save-lesson-btn">Save Lesson</button><button type="button" class="btn add-activity-btn" id="add-activity-btn">+ Add Activity</button><button type="button" class="btn teach-lesson-btn" id="teach-lesson-btn">&#9658; Teach My Lesson</button></div></form></div>
+            <div class="teach-view"><div class="time-controls-container"><p id="teach-time-display">00:00 / 00:00</p><div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div><div class="time-bar-container" id="time-bar-container"><div class="time-bar-fill" id="time-bar-fill"></div><div class="time-bar-handle" id="time-bar-handle"></div></div><div class="timer-mode-switcher"><label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label><label><input type="radio" name="timer-mode" value="timer"> Timer</label></div></div><div class="teach-view-container"><div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div><div class="resizer" id="resizer"></div><div class="teach-panel teach-view-right" id="static-info-panel"></div></div></div>
             <button class="stop-teaching-btn" id="stop-teaching-btn">&#9724; Stop Teaching</button>
         </div>
     </main>
 
-    <main id="my-lessons" class="page-content" style="display: none;">
-        <div class="content-area">
-            <div class="content-container">
-                <div class="my-lessons-header">
-                    <h1>My Lessons</h1>
-                    <button class="btn btn-delete-all" id="delete-all-btn">Delete All Lessons</button>
-                </div>
-                <div id="lesson-list-container"></div>
-            </div>
-        </div>
-    </main>
-
+    <main id="my-lessons" class="page-content" style="display: none;"><div class="content-area"><div class="content-container"><div class="my-lessons-header"><h1>My Lessons</h1><button class="btn btn-delete-all" id="delete-all-btn">Delete All Lessons</button></div><div id="lesson-list-container"></div></div></div></main>
     <div class="modal-overlay" id="save-modal-overlay"><div class="modal-content"><h2>Save Lesson</h2><p>Please enter a name for this lesson plan. If a lesson with this name already exists, it will be overwritten.</p><input type="text" id="lesson-name-input" placeholder="e.g., Intro to Renaissance Art"><div class="modal-actions"><button type="button" class="btn btn-cancel" id="cancel-save-btn">Cancel</button><button type="button" class="btn save-lesson-btn" id="confirm-save-btn">Save</button></div></div></div>
     <div class="popup-message" id="popup-message">Save Successful!</div>
 
@@ -175,23 +141,19 @@
             const pages = document.querySelectorAll('.page-content');
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
-                    const pageId = this.dataset.page;
-                    if (!pageId) return;
-
+                    const pageId = this.dataset.page; if (!pageId) return;
                     navLinks.forEach(l => l.classList.remove('active'));
                     e.target.classList.add('active');
                     const parentNavItem = e.target.closest('.nav-item');
-                    if (parentNavItem.querySelector('.dropdown')) {
-                        parentNavItem.querySelector('a').classList.add('active');
-                    }
-                    
+                    if (parentNavItem.querySelector('.dropdown')) { parentNavItem.querySelector('a[data-page="lesson-planner"]').classList.add('active'); }
                     pages.forEach(page => page.style.display = 'none');
                     document.getElementById(pageId).style.display = 'block';
-                    
-                    if (pageId === 'my-lessons') {
-                        loadLessonsIntoView();
-                    } else if (pageId === 'lesson-planner' && !e.target.closest('.dropdown')) {
-                         document.getElementById('current-lesson-name').value = '';
+                    if (pageId === 'my-lessons') { loadLessonsIntoView(); } 
+                    else if (pageId === 'lesson-planner' && !e.target.closest('.dropdown')) { 
+                        document.getElementById('current-lesson-name').value = ''; 
+                        document.querySelector('.lesson-form').reset();
+                        activitiesContainer.innerHTML = '';
+                        updateTotalTime();
                     }
                 });
             });
@@ -201,26 +163,43 @@
             if (hero) window.addEventListener('scroll', () => { hero.style.backgroundPositionY = window.pageYOffset * 0.5 + 'px'; });
 
             // --- Lesson Planner Functionality ---
-            const lessonPlannerPage = document.getElementById('lesson-planner');
-            const addActivityBtn = document.getElementById('add-activity-btn');
-            const activitiesContainer = document.getElementById('activities-container');
-            const totalTimeDisplay = document.getElementById('total-time-display');
-            let activityCounter = 0;
-
+            const lessonPlannerPage = document.getElementById('lesson-planner'); const addActivityBtn = document.getElementById('add-activity-btn'); const activitiesContainer = document.getElementById('activities-container'); const totalTimeDisplay = document.getElementById('total-time-display');
             const updateTotalTime = () => { let totalMinutes = 0; activitiesContainer.querySelectorAll('.activity-minutes').forEach(input => { totalMinutes += parseInt(input.value, 10) || 0; }); totalTimeDisplay.textContent = `${totalMinutes} Minutes`; return totalMinutes; };
-            const createActivityElement = (name = '', minutes = '', notes = '') => { activityCounter++; const el = document.createElement('div'); el.className = 'activity-item'; el.innerHTML = `<div class="activity-item-header"><div class="form-group"><label for="activity-name-${activityCounter}">Activity Name</label><input type="text" id="activity-name-${activityCounter}" value="${name}"></div><div class="form-group minutes-group"><label for="activity-minutes-${activityCounter}">Minutes</label><input type="number" class="activity-minutes" id="activity-minutes-${activityCounter}" value="${minutes}" min="0"></div></div><div class="form-group"><label for="activity-notes-${activityCounter}">Notes</label><textarea id="activity-notes-${activityCounter}">${notes}</textarea></div>`; return el; };
+            const createSubActivityElement = (minutes = '', notes = '') => { return `<div class="sub-activity-item"><div class="sub-activity-header"><div class="form-group minutes-group"><label>Minutes</label><input type="number" class="activity-minutes" value="${minutes}" min="0"></div></div><div class="form-group"><label>Notes</label><textarea>${notes}</textarea></div></div>`; };
+            const createActivityElement = (name = '', subActivities = [{ minutes: '', notes: '' }]) => {
+                const activityEl = document.createElement('div'); activityEl.className = 'activity-item';
+                const subActivitiesHtml = subActivities.map(sub => createSubActivityElement(sub.minutes, sub.notes)).join('');
+                activityEl.innerHTML = `<button class="delete-activity-btn">&times;</button><div class="activity-item-header"><div class="form-group"><label>Activity Name</label><input type="text" class="activity-name" value="${name}"></div></div><div class="sub-activity-container">${subActivitiesHtml}</div><div class="activity-footer"><button type="button" class="btn divide-activity-btn">Divide</button></div>`;
+                return activityEl;
+            };
             addActivityBtn.addEventListener('click', () => { const newActivity = createActivityElement(); newActivity.style.cssText = 'max-height:0; opacity:0; padding-top:0; padding-bottom:0; margin-bottom:0;'; activitiesContainer.appendChild(newActivity); setTimeout(() => { newActivity.style.cssText = ''; }, 10); });
             activitiesContainer.addEventListener('input', e => { if (e.target.classList.contains('activity-minutes')) updateTotalTime(); });
+            activitiesContainer.addEventListener('click', e => {
+                if (e.target.classList.contains('delete-activity-btn')) {
+                    const activityItem = e.target.closest('.activity-item');
+                    activityItem.classList.add('deleting');
+                    setTimeout(() => { activityItem.remove(); updateTotalTime(); }, 500);
+                } else if (e.target.classList.contains('divide-activity-btn')) {
+                    const subContainer = e.target.closest('.activity-item').querySelector('.sub-activity-container');
+                    const newSubActivityHtml = createSubActivityElement();
+                    subContainer.insertAdjacentHTML('beforeend', newSubActivityHtml);
+                }
+            });
 
             // --- Save/Load Functionality ---
             const saveModalOverlay = document.getElementById('save-modal-overlay'); const saveLessonBtn = document.getElementById('save-lesson-btn'); const confirmSaveBtn = document.getElementById('confirm-save-btn'); const cancelSaveBtn = document.getElementById('cancel-save-btn'); const lessonNameInput = document.getElementById('lesson-name-input'); const currentLessonNameInput = document.getElementById('current-lesson-name'); const popupMessage = document.getElementById('popup-message'); const lessonListContainer = document.getElementById('lesson-list-container'); const deleteAllBtn = document.getElementById('delete-all-btn');
             saveLessonBtn.addEventListener('click', () => { lessonNameInput.value = currentLessonNameInput.value; saveModalOverlay.classList.add('active'); });
             cancelSaveBtn.addEventListener('click', () => saveModalOverlay.classList.remove('active'));
             confirmSaveBtn.addEventListener('click', () => {
-                const lessonName = lessonNameInput.value.trim();
-                if (!lessonName) { alert("Please enter a name for the lesson."); return; }
+                const lessonName = lessonNameInput.value.trim(); if (!lessonName) { alert("Please enter a name for the lesson."); return; }
                 const lessonData = { courseName: document.getElementById('course-name').value, unitName: document.getElementById('unit-name').value, courseObjectives: document.getElementById('course-objectives').value, learningGoals: document.getElementById('learning-goals').value, activities: [] };
-                activitiesContainer.querySelectorAll('.activity-item').forEach(item => { lessonData.activities.push({ name: item.querySelector('input[type="text"]').value, minutes: item.querySelector('input[type="number"]').value, notes: item.querySelector('textarea').value }); });
+                activitiesContainer.querySelectorAll('.activity-item').forEach(item => {
+                    const subActivities = [];
+                    item.querySelectorAll('.sub-activity-item').forEach(subItem => {
+                        subActivities.push({ minutes: subItem.querySelector('.activity-minutes').value, notes: subItem.querySelector('textarea').value });
+                    });
+                    lessonData.activities.push({ name: item.querySelector('.activity-name').value, subActivities });
+                });
                 localStorage.setItem(`lesson_${lessonName}`, JSON.stringify(lessonData)); currentLessonNameInput.value = lessonName; saveModalOverlay.classList.remove('active');
                 popupMessage.classList.add('show'); setTimeout(() => popupMessage.classList.remove('show'), 2000);
             });
@@ -235,7 +214,7 @@
                 if (e.target.classList.contains('btn-open')) {
                     const data = JSON.parse(localStorage.getItem(`lesson_${lessonName}`)); if (!data) return;
                     document.getElementById('course-name').value = data.courseName; document.getElementById('unit-name').value = data.unitName; document.getElementById('course-objectives').value = data.courseObjectives; document.getElementById('learning-goals').value = data.learningGoals; currentLessonNameInput.value = lessonName;
-                    activitiesContainer.innerHTML = ''; data.activities.forEach(act => { const el = createActivityElement(act.name, act.minutes, act.notes); activitiesContainer.appendChild(el); });
+                    activitiesContainer.innerHTML = ''; data.activities.forEach(act => { const el = createActivityElement(act.name, act.subActivities); activitiesContainer.appendChild(el); });
                     updateTotalTime(); document.querySelector('.nav-link[data-page="lesson-planner"]').click();
                 } else if (e.target.classList.contains('btn-delete')) {
                     if (confirm(`Are you sure you want to delete the lesson "${lessonName}"? This cannot be undone.`)) { localStorage.removeItem(`lesson_${lessonName}`); loadLessonsIntoView(); }
@@ -269,7 +248,18 @@
                 if (updateTotalTime() === 0) { alert("Please add at least one activity with a time greater than 0."); return; }
                 document.querySelector('input[name="timer-mode"][value="stopwatch"]').checked = true;
                 activitiesData = []; let cumulativeTime = 0;
-                Array.from(activitiesContainer.children).forEach((item) => { const name = item.querySelector('input[type="text"]').value || `Unnamed Activity`; const minutes = parseInt(item.querySelector('input[type="number"]').value, 10) || 0; const notes = item.querySelector('textarea').value; if (minutes > 0) { activitiesData.push({ name, minutes, notes, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60) }); cumulativeTime += minutes * 60; } });
+                Array.from(activitiesContainer.children).forEach(item => {
+                    const activityName = item.querySelector('.activity-name').value || `Unnamed Activity`;
+                    item.querySelectorAll('.sub-activity-item').forEach((subItem, index) => {
+                        const minutes = parseInt(subItem.querySelector('.activity-minutes').value, 10) || 0;
+                        if (minutes > 0) {
+                            const subName = item.querySelectorAll('.sub-activity-item').length > 1 ? `${activityName} (Part ${index + 1})` : activityName;
+                            const notes = subItem.querySelector('textarea').value;
+                            activitiesData.push({ name: subName, minutes, notes, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60) });
+                            cumulativeTime += minutes * 60;
+                        }
+                    });
+                });
                 totalLessonSeconds = cumulativeTime;
                 staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
                 activitiesDisplayScroller.innerHTML = activitiesData.map((act, index) => `<div class="activity-display-item" id="display-activity-${index}"><h4>${act.name} <span>(${act.minutes} min)</span></h4><p>${act.notes||' '}</p></div>`).join('');
