@@ -81,7 +81,9 @@
         .sub-activity-display-item:not(:first-child) { border-top: 1px dashed var(--border-color); }
         .sub-activity-display-item.is-active { opacity: 1; transform: scale(1); }
         .activity-display-item.is-active-parent { box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); border-color: var(--accent-color); }
+        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; }
         .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+        .activity-display-item-header span { font-style: italic; color: #777; font-size: 1.1rem; }
         .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; }
         .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
         .stop-teaching-btn { position: fixed; bottom: 2rem; right: 2rem; background-color: var(--stop-color); color: white; border: none; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; transform: scale(0); opacity: 0; z-index: 1100; }
@@ -89,7 +91,9 @@
         .time-controls-container { position: absolute; top: 0; left: 0; width: 100px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 1rem 0; background: var(--primary-light); border-right: 1px solid var(--border-color); z-index: 20; }
         #teach-time-display { font-weight: 700; font-size: 1.1rem; text-align: center; height: 40px; }
         .timer-controls button { background: none; border: none; font-size: 2.5rem; cursor: pointer; color: var(--primary-dark); transition: color 0.3s; height: 50px; } .timer-controls button:hover { color: var(--accent-color); }
-        .timer-mode-switcher { margin-top: auto; font-size: 0.9rem; } .timer-mode-switcher label { margin: 0.5rem; cursor: pointer; display: block; text-align: center; }
+        .timer-mode-switcher { margin-top: auto; font-size: 0.9rem; } 
+        .timer-mode-switcher label { margin: 0.5rem; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; }
+        .timer-mode-switcher input { margin-right: 8px; }
         .time-bar-container { position: relative; width: 15px; flex-grow: 1; background: #ddd; border-radius: 10px; margin: 1rem 0; cursor: pointer; }
         .time-bar-fill { position: absolute; width: 100%; background: var(--teach-color); border-radius: 10px; bottom: 0; }
         .time-bar-handle { position: absolute; left: 50%; transform: translate(-50%, 50%); width: 25px; height: 10px; background: var(--primary-dark); border-radius: 3px; cursor: ns-resize; }
@@ -179,13 +183,20 @@
             // --- Lesson Planner Functionality ---
             const lessonPlannerPage = document.getElementById('lesson-planner'); const addActivityBtn = document.getElementById('add-activity-btn'); const activitiesContainer = document.getElementById('activities-container'); const totalTimeDisplay = document.getElementById('total-time-display');
             const updateTotalTime = () => { let totalMinutes = 0; activitiesContainer.querySelectorAll('.activity-minutes').forEach(input => { totalMinutes += parseInt(input.value, 10) || 0; }); totalTimeDisplay.textContent = `${totalMinutes} Minutes`; return totalMinutes; };
-            const updateSubActivityLabels = (activityItem) => { activityItem.querySelectorAll('.sub-activity-item').forEach((subItem, index) => { subItem.querySelector('.sub-activity-label').textContent = `Part ${index + 1}`; }); };
+            const updateActivityPartVisibility = (activityItem) => {
+                const subItems = activityItem.querySelectorAll('.sub-activity-item');
+                subItems.forEach((subItem, index) => {
+                    subItem.querySelector('.sub-activity-label').style.display = subItems.length > 1 ? '' : 'none';
+                    subItem.querySelector('.delete-sub-activity-btn').style.display = subItems.length > 1 ? '' : 'none';
+                    subItem.querySelector('.sub-activity-label').textContent = `Part ${index + 1}`;
+                });
+            };
             const createSubActivityElement = (minutes = '', notes = '') => { return `<div class="sub-activity-item"><div class="sub-activity-label"></div><div class="sub-activity-content"><div class="sub-activity-header"><div class="form-group minutes-group"><label>Minutes</label><input type="number" class="activity-minutes" value="${minutes}" min="0"></div></div><div class="form-group"><label>Notes</label><textarea>${notes}</textarea></div></div><button type="button" class="delete-sub-activity-btn">&times;</button></div>`; };
             const createActivityElement = (name = '', subActivities = [{ minutes: '', notes: '' }]) => {
                 const activityEl = document.createElement('div'); activityEl.className = 'activity-item';
                 const subActivitiesHtml = subActivities.map(sub => createSubActivityElement(sub.minutes, sub.notes)).join('');
                 activityEl.innerHTML = `<button type="button" class="delete-activity-btn">&times;</button><div class="activity-item-header"><div class="form-group"><label>Activity Name</label><input type="text" class="activity-name" value="${name}"></div></div><div class="sub-activity-container">${subActivitiesHtml}</div><div class="activity-footer"><button type="button" class="btn divide-activity-btn">Divide</button></div>`;
-                updateSubActivityLabels(activityEl); return activityEl;
+                updateActivityPartVisibility(activityEl); return activityEl;
             };
             addActivityBtn.addEventListener('click', () => { const newActivity = createActivityElement(); newActivity.style.cssText = 'max-height:0; opacity:0; padding-top:0; padding-bottom:0; margin-bottom:0;'; activitiesContainer.appendChild(newActivity); setTimeout(() => { newActivity.style.cssText = ''; }, 10); });
             activitiesContainer.addEventListener('input', e => { if (e.target.classList.contains('activity-minutes')) updateTotalTime(); });
@@ -193,12 +204,12 @@
                 if (e.target.classList.contains('delete-activity-btn')) { const activityItem = e.target.closest('.activity-item'); activityItem.classList.add('deleting'); setTimeout(() => { activityItem.remove(); updateTotalTime(); }, 500); }
                 else if (e.target.classList.contains('delete-sub-activity-btn')) {
                     const subActivityItem = e.target.closest('.sub-activity-item'); const parentActivity = subActivityItem.closest('.activity-item');
-                    if (parentActivity.querySelectorAll('.sub-activity-item').length > 1) { subActivityItem.remove(); updateSubActivityLabels(parentActivity); updateTotalTime(); } 
+                    if (parentActivity.querySelectorAll('.sub-activity-item').length > 1) { subActivityItem.remove(); updateActivityPartVisibility(parentActivity); updateTotalTime(); } 
                     else { alert("You cannot delete the last part of an activity. Delete the whole activity instead."); }
                 }
                 else if (e.target.classList.contains('divide-activity-btn')) {
                     const parentActivity = e.target.closest('.activity-item'); const subContainer = parentActivity.querySelector('.sub-activity-container');
-                    subContainer.insertAdjacentHTML('beforeend', createSubActivityElement()); updateSubActivityLabels(parentActivity);
+                    subContainer.insertAdjacentHTML('beforeend', createSubActivityElement()); updateActivityPartVisibility(parentActivity);
                 }
             });
 
@@ -266,21 +277,25 @@
                 teachModeActivities = []; let cumulativeTime = 0; let parentIndex = 0;
                 Array.from(activitiesContainer.children).forEach(item => {
                     const activityName = item.querySelector('.activity-name').value || `Unnamed Activity`;
-                    item.querySelectorAll('.sub-activity-item').forEach((subItem, subIndex) => {
+                    const subItems = item.querySelectorAll('.sub-activity-item');
+                    subItems.forEach((subItem, subIndex) => {
                         const minutes = parseInt(subItem.querySelector('.activity-minutes').value, 10) || 0;
                         if (minutes > 0) {
-                            teachModeActivities.push({ parentId: `parent-activity-${parentIndex}`, parentName: activityName, id: `sub-activity-${parentIndex}-${subIndex}`, partNumber: subIndex + 1, minutes, notes: subItem.querySelector('textarea').value, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60) });
+                            teachModeActivities.push({ parentId: `parent-activity-${parentIndex}`, parentName: activityName, parentTotalSubActivities: subItems.length, id: `sub-activity-${parentIndex}-${subIndex}`, partNumber: subIndex + 1, minutes, notes: subItem.querySelector('textarea').value, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60) });
                             cumulativeTime += minutes * 60;
                         }
                     });
-                    if (item.querySelectorAll('.sub-activity-item').length > 0) parentIndex++;
+                    if (subItems.length > 0) parentIndex++;
                 });
                 totalLessonSeconds = cumulativeTime;
                 staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
                 let currentParentId = null; let html = '';
+                const parentTotals = teachModeActivities.reduce((acc, act) => { acc[act.parentId] = (acc[act.parentId] || 0) + act.minutes; return acc; }, {});
                 teachModeActivities.forEach(act => {
-                    if (act.parentId !== currentParentId) { if (currentParentId !== null) html += `</div>`; html += `<div class="activity-display-item" id="${act.parentId}"><h4>${act.parentName}</h4>`; currentParentId = act.parentId; }
-                    html += `<div class="sub-activity-display-item" id="${act.id}"><div class="sub-activity-display-item-header"><span>Part ${act.partNumber}</span><span>${act.minutes} min</span></div><p>${act.notes||' '}</p></div>`;
+                    if (act.parentId !== currentParentId) { if (currentParentId !== null) html += `</div>`; html += `<div class="activity-display-item" id="${act.parentId}"><div class="activity-display-item-header"><h4>${act.parentName}</h4><span>${parentTotals[act.parentId]} min</span></div>`; currentParentId = act.parentId; }
+                    const partLabel = act.parentTotalSubActivities > 1 ? `Part ${act.partNumber}` : '';
+                    const timeLabel = act.parentTotalSubActivities > 1 ? `<span>${act.minutes} min</span>` : '';
+                    html += `<div class="sub-activity-display-item" id="${act.id}"><div class="sub-activity-display-item-header"><span>${partLabel}</span>${timeLabel}</div><p>${act.notes||' '}</p></div>`;
                 });
                 if (currentParentId !== null) html += `</div>`;
                 activitiesDisplayScroller.innerHTML = html;
