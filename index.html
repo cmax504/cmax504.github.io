@@ -38,7 +38,9 @@
         .site-footer { background-color: var(--primary-dark); color: rgba(255, 255, 255, 0.7); text-align: center; padding: 1.5rem; font-size: 0.9rem; }
         .content-area { padding: 4rem 2rem; background-color: #ffffff; position: relative; }
         .content-container { max-width: 900px; margin: 0 auto; }
-        #lesson-planner .content-area, #my-lessons .content-area { padding-top: 120px; min-height: 100vh; }
+        #lesson-planner .content-area { padding-top: 120px; min-height: 100vh; overflow: hidden; }
+        #my-lessons .content-area { padding-top: 120px; min-height: 100vh; }
+        #my-lessons .content-container { max-width: 1200px; } /* Wider container for My Lessons */
         
         /* Lesson Planner Form Styles */
         .form-view { transition: opacity 0.5s, transform 0.5s; height: calc(100vh - 120px); overflow-y: auto; padding: 1px 15px 1px 1px; }
@@ -83,9 +85,11 @@
         .sub-activity-display-item:not(:first-child) { border-top: 1px dashed var(--border-color); }
         .sub-activity-display-item.is-active { opacity: 1; transform: scale(1); }
         .activity-display-item.is-active-parent { box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); border-color: var(--accent-color); }
-        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; } .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; }
+        .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
         .activity-display-item-header .time-display { font-size: 1.1rem; color: #777; white-space: nowrap; font-style: normal; }
-        .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; } .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
+        .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; }
+        .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
         .activity-progress-bar { height: 6px; background-color: #ddd; border-radius: 3px; margin-bottom: 1rem; overflow: hidden; display: none; }
         .activity-progress-bar-fill { width: 0%; height: 100%; background-color: var(--duplicate-color); border-radius: 3px; transition: width 0.2s linear; }
         #lesson-planner.progress-bars-active .activity-progress-bar { display: block; }
@@ -103,28 +107,27 @@
         #lesson-planner.teach-mode-active .form-view { opacity: 0; transform: translateY(-20px); pointer-events: none; height: 0; overflow: hidden; }
         #lesson-planner.teach-mode-active .teach-view { display: block; opacity: 1; transform: translateY(0); }
         #lesson-planner.teach-mode-active .stop-teaching-btn { transform: scale(1); opacity: 1; }
-        #my-lessons .my-lessons-header { display: flex; justify-content: space-between; align-items: center; } 
-        #my-lessons .actions { display: flex; gap: 1rem; }
-        #my-lessons-content { display: flex; gap: 2rem; } #my-lessons-content.center-folders { justify-content: center; }
-        #folder-list { flex-shrink: 0; width: 200px; } #lesson-list { flex-grow: 1; }
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem; }
-        .folder-item { position: relative; text-align: center; cursor: pointer; } .folder-item .icon { font-size: 4rem; color: var(--folder-color); transition: color 0.2s, transform 0.2s; } .folder-item:hover .icon { color: var(--folder-color-hover); }
+        .my-lessons-header { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 1.5rem; gap: 1rem; }
+        #my-lessons-content { display: flex; gap: 2.5rem; } #my-lessons-content.center-folders { justify-content: center; }
+        #folder-list { flex-shrink: 0; width: 220px; } #lesson-list { flex-grow: 1; }
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 1.5rem; }
+        .folder-item { position: relative; text-align: center; cursor: pointer; padding: 1rem; } .folder-item .icon { font-size: 4rem; color: var(--folder-color); transition: color 0.2s, transform 0.2s; } .folder-item:hover .icon { color: var(--folder-color-hover); }
         .folder-item .name { font-size: 0.9rem; font-weight: bold; margin-top: 0.5rem; word-break: break-word; }
-        .folder-item .delete-folder-btn { position: absolute; top: -5px; right: -5px; background: var(--stop-color); color: white; border: 2px solid white; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; line-height: 18px; text-align: center; cursor: pointer; opacity: 0; transition: opacity 0.2s, transform 0.2s; }
+        .folder-item .delete-folder-btn { position: absolute; top: 0; right: 0; background: var(--stop-color); color: white; border: 2px solid white; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; line-height: 18px; text-align: center; cursor: pointer; opacity: 0; transition: opacity 0.2s, transform 0.2s; }
         .folder-item:hover .delete-folder-btn { opacity: 1; transform: scale(1.1); }
         .folder-item.drag-over .icon { color: var(--accent-color); transform: scale(1.1); }
         .lesson-list-item { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; background: var(--primary-light); cursor: grab; }
         .lesson-list-item:active { cursor: grabbing; }
         .lesson-list-item h3 { font-family: var(--font-heading); color: var(--primary-dark); }
-        .lesson-list-item .actions { display: flex; flex-wrap: wrap; gap: 1rem; margin-right: 3rem; }
+        .lesson-list-item .actions { display: flex; flex-wrap: wrap; gap: 1rem; }
         .btn-open { background-color: var(--teach-color); } .btn-open:hover { background-color: var(--teach-color-hover); } .btn-duplicate { background-color: var(--duplicate-color); } .btn-duplicate:hover { background-color: var(--duplicate-color-hover); }
         .delete-lesson-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; font-size: 1.5rem; color: var(--stop-color); cursor: pointer; transition: transform 0.2s, color 0.2s; }
         .delete-lesson-btn:hover { transform: scale(1.2); color: var(--stop-color-hover); }
         .btn-delete-all, .btn-create-folder { background-color: var(--stop-color); } .btn-delete-all:hover, .btn-create-folder:hover { background-color: var(--stop-color-hover); }
         .btn-create-folder { background-color: var(--folder-color); } .btn-create-folder:hover { background-color: var(--folder-color-hover); }
-        #breadcrumb-nav { font-family: var(--font-heading); font-size: 2.5rem; color: var(--primary-dark); margin-bottom: 2rem; } 
-        #breadcrumb-nav a { color: var(--accent-color); text-decoration: none; cursor: pointer; } 
-        #breadcrumb-nav a:hover { text-decoration: underline; }
+        #breadcrumb-nav { font-family: var(--font-heading); font-size: 2.5rem; color: var(--primary-dark); margin-bottom: 2.5rem; } 
+        #breadcrumb-nav a { color: var(--primary-dark); text-decoration: none; cursor: pointer; transition: color 0.2s ease; } 
+        #breadcrumb-nav a:hover { color: var(--accent-color); }
         #breadcrumb-nav span { margin: 0 0.5rem; color: var(--border-color); }
         #remove-from-folder-dropzone { display: none; padding: 2rem; border: 2px dashed var(--border-color); border-radius: 8px; text-align: center; margin-top: 2rem; color: #777; transition: background-color 0.2s, border-color 0.2s; }
         #remove-from-folder-dropzone.drag-over { background-color: var(--primary-light); border-color: var(--accent-color); }
@@ -143,7 +146,7 @@
     <nav class="navbar"><ul class="nav-container"><li class="nav-item"><a class="nav-link active" data-page="home">Home</a></li><li class="nav-item"><a class="nav-link" data-page="lesson-planner">Lesson Planner</a><ul class="dropdown"><li><a class="nav-link" data-page="my-lessons">My Lessons</a></li></ul></li></ul></nav>
     <main id="home" class="page-content"><header class="hero-parallax" id="hero"><div class="hero-content"><h1 class="hero-title">The Humanist's Toolkit</h1><p class="hero-description">Though the word "Humanist" is in the title, this free resource is designed to assist researchers and educators of all sorts. Explore and enjoy! Much more to come!</p></div></header><section class="content-area" style="min-height: 40vh; background-color: #ffffff;"></section><footer class="site-footer"><p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p></footer></main>
     <main id="lesson-planner" class="page-content" style="display: none;"><div class="content-area"><div class="form-view"><form class="lesson-form"><div class="total-time-widget"><h3 >Total Lesson Time</h3><p id="total-time-display">0 Minutes</p></div><input type="hidden" id="current-lesson-name" value=""><h1>Lesson Planner</h1><div class="form-group"><label for="course-name">Course Name</label><input type="text" id="course-name"></div><div class="form-group"><label for="unit-name">Unit Name</label><input type="text" id="unit-name"></div><div class="form-group"><label for="course-objectives">Relevant Course Objectives</label><textarea id="course-objectives"></textarea></div><div class="form-group"><label for="learning-goals">Learning Goals of the Lesson</label><textarea id="learning-goals"></textarea></div><h2>Activities</h2><div id="activities-container"></div><div class="form-actions"><button type="button" class="btn save-lesson-btn" id="save-lesson-btn">Save Lesson</button><button type="button" class="btn add-activity-btn" id="add-activity-btn">+ Add Activity</button><button type="button" class="btn teach-lesson-btn" id="teach-lesson-btn">&#9658; Teach My Lesson</button></div></form></div><div class="teach-view"><div class="time-controls-container"><p id="teach-time-display">00:00 / 00:00</p><div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div><div class="time-bar-container" id="time-bar-container"><div class="time-bar-fill" id="time-bar-fill"></div><div class="time-bar-handle" id="time-bar-handle"></div></div><div class="teach-options"><label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label><label><input type="radio" name="timer-mode" value="timer"> Timer</label><label><input type="checkbox" id="progress-bar-toggle"> Progress Bars</label><label><input type="checkbox" id="kinetic-numbers-toggle"> Kinetic Numbers</label></div></div><div class="teach-view-container"><div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div><div class="resizer" id="resizer"></div><div class="teach-panel teach-view-right" id="static-info-panel"></div></div></div><button class="stop-teaching-btn" id="stop-teaching-btn">&#9724; Stop Teaching</button></div></main>
-    <main id="my-lessons" class="page-content" style="display: none;"><div class="content-area"><div class="content-container"><nav id="breadcrumb-nav"></nav><div class="my-lessons-header"><div class="actions"><button class="btn btn-create-folder" id="create-folder-btn" title="Create a new folder in this directory. Once created, add files by dragging them onto the folder. This feature works within folders if you wish to create a folder inside of another folder.">Create Folder</button><button class="btn btn-delete-all" id="delete-all-btn">Delete All</button></div></div><div id="my-lessons-content"><div id="folder-list"></div><div id="lesson-list"></div></div><div id="remove-from-folder-dropzone"><p>Drag here to remove from current folder</p></div></div></div></main>
+    <main id="my-lessons" class="page-content" style="display: none;"><div class="content-area"><div class="content-container"><div class="my-lessons-header"><nav id="breadcrumb-nav"></nav><div class="actions"><button class="btn btn-create-folder" id="create-folder-btn" title="Create a new folder in this directory. Once created, add files by dragging them onto the folder. This feature works within folders if you wish to create a folder inside of another folder.">Create Folder</button><button class="btn btn-delete-all" id="delete-all-btn">Delete All</button></div></div><div id="my-lessons-content"><div id="folder-list"></div><div id="lesson-list"></div></div><div id="remove-from-folder-dropzone"><p>Drag here to remove from current folder</p></div></div></div></main>
     <div class="modal-overlay" id="save-modal-overlay"><div class="modal-content"><h2>Save Lesson</h2><p>Please enter a name for this lesson plan. If a lesson with this name already exists, it will be overwritten.</p><input type="text" id="lesson-name-input" placeholder="e.g., Intro to Renaissance Art"><div class="modal-actions"><button type="button" class="btn btn-cancel" id="cancel-save-btn">Cancel</button><button type="button" class="btn save-lesson-btn" id="confirm-save-btn">Save</button></div></div></div>
     <div class="popup-message" id="popup-message">Save Successful!</div>
 
@@ -227,7 +230,7 @@
                 let path = []; let parentId = currentFolderId;
                 while (parentId !== 'root' && data.folders[parentId]) { path.unshift({id: parentId, name: data.folders[parentId].name}); parentId = data.folders[parentId].parentId; }
                 path.unshift({id: 'root', name: 'My Lessons'});
-                breadcrumbNav.innerHTML = path.map(p => `<a data-folder-id="${p.id}">${p.name}</a>`).join('<span>&gt;</span>');
+                breadcrumbNav.innerHTML = path.map((p, i) => i === path.length - 1 ? `<span>${p.name}</span>` : `<a data-folder-id="${p.id}">${p.name}</a>`).join('<span>&nbsp;&gt;&nbsp;</span>');
                 const foldersInView = Object.values(data.folders).filter(f => f.parentId === currentFolderId);
                 const lessonsInView = Object.entries(data.lessons).filter(([name, lesson]) => lesson.folderId === currentFolderId);
                 if (foldersInView.length > 0) {
@@ -260,7 +263,7 @@
                         const data = getData(); if (!data.lessons[lessonName]) return;
                         const lesson = data.lessons[lessonName];
                         document.getElementById('course-name').value = lesson.courseName; document.getElementById('unit-name').value = lesson.unitName; document.getElementById('course-objectives').value = lesson.courseObjectives; document.getElementById('learning-goals').value = lesson.learningGoals; currentLessonNameInput.value = lessonName;
-                        activitiesContainer.innerHTML = ''; lesson.activities.forEach(act => { const el = createActivityElement(act.name, act.subActivities); activitiesContainer.appendChild(el); });
+                        activitiesContainer.innerHTML = ''; (lesson.activities || []).forEach(act => { const el = createActivityElement(act.name, act.subActivities); activitiesContainer.appendChild(el); });
                         updateTotalTime(); navigateToPage('lesson-planner', false);
                     } else if (e.target.classList.contains('delete-lesson-btn')) {
                         if (confirm(`Are you sure you want to delete the lesson "${lessonName}"? This cannot be undone.`)) { const data = getData(); delete data.lessons[lessonName]; saveData(data); renderMyLessons(); }
