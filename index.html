@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Humanist's Toolkit</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
     <style>
@@ -13,7 +13,7 @@
             --primary-dark: #2c3e50; --primary-light: #ecf0f1; --accent-color: #3498db;
             --accent-color-hover: #2980b9; --teach-color: #27ae60; --teach-color-hover: #229954;
             --stop-color: #c0392b; --stop-color-hover: #a93226; --save-color: #8e44ad; --save-color-hover: #7d3c98;
-            --duplicate-color: #16a085; --duplicate-color-hover: #117a65;
+            --duplicate-color: #16a085; --duplicate-color-hover: #117a65; --divide-color: #e67e22; --divide-color-hover: #d35400;
             --text-color-dark: #34495e; --text-color-light: #ffffff; --border-color: #bdc3c7;
             --font-heading: 'Playfair Display', serif; --font-body: 'Lato', sans-serif;
         }
@@ -27,7 +27,6 @@
         .nav-item > a:hover, .nav-item a.active { background-color: var(--accent-color); }
         .dropdown { display: none; position: absolute; top: 100%; left: 0; background-color: var(--primary-dark); list-style: none; padding: 0.5rem 0; border-radius: 0 0 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); min-width: 150px; }
         .nav-item:hover .dropdown { display: block; }
-        .dropdown li a { padding: 0.5rem 1rem; width: 100%; text-align: left; }
         .dropdown li a:hover { background-color: var(--accent-color); }
         .page-content { display: block; }
         .hero-parallax { background-image: url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format=fit=crop&w=1770&q=80'); min-height: 85vh; background-position: center; background-repeat: no-repeat; background-size: cover; position: relative; display: flex; justify-content: center; align-items: center; text-align: center; color: var(--text-color-light); }
@@ -48,7 +47,7 @@
         .lesson-form input:focus, .lesson-form textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
         .lesson-form textarea { min-height: 120px; resize: vertical; }
         #activities-container .activity-item { position: relative; background-color: var(--primary-light); border-left: 4px solid var(--accent-color); padding: 1.5rem; margin-bottom: 1rem; border-radius: 4px; transition: all 0.5s ease-in-out; }
-        #activities-container .activity-item.deleting { max-height: 0 !important; opacity: 0; padding: 0; margin: 0; }
+        #activities-container .activity-item.deleting { max-height: 0 !important; opacity: 0; padding-top: 0; padding-bottom: 0; margin-bottom: 0; border: none; }
         .activity-item-header { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
         .activity-item-header .form-group { flex-grow: 1; margin-bottom: 0; }
         .sub-activity-container { padding-left: 1rem; border-left: 2px dashed var(--border-color); }
@@ -57,9 +56,9 @@
         .sub-activity-header .form-group { flex-grow: 1; margin-bottom: 0; }
         .minutes-group input { width: 80px; }
         .activity-footer { display: flex; justify-content: flex-end; margin-top: 1rem; }
-        .divide-activity-btn { font-size: 0.9rem; padding: 0.5rem 1rem; }
-        .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .btn { padding: 1rem; color: white; border: none; border-radius: 4px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background-color 0.3s; }
+        .divide-activity-btn { font-size: 0.9rem; padding: 0.5rem 1rem; background-color: var(--divide-color); } .divide-activity-btn:hover { background-color: var(--divide-color-hover); }
+        .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
         .save-lesson-btn { flex-grow: 1; background-color: var(--save-color); } .save-lesson-btn:hover { background-color: var(--save-color-hover); }
         .add-activity-btn { flex-grow: 1; background-color: var(--accent-color); } .add-activity-btn:hover { background-color: var(--accent-color-hover); }
         .teach-lesson-btn { flex-grow: 1; background-color: var(--teach-color); } .teach-lesson-btn:hover { background-color: var(--teach-color-hover); }
@@ -75,8 +74,14 @@
         .teach-view-left { flex-basis: 50%; } .teach-view-right { flex-basis: 50%; background: var(--primary-light); border-left: 1px solid var(--border-color); }
         .static-info-item { margin-bottom: 2rem; } .static-info-item h3 { font-family: var(--font-heading); color: var(--primary-dark); border-bottom: 2px solid var(--accent-color); padding-bottom: 0.5rem; margin-bottom: 0.5rem; } .static-info-item p { white-space: pre-wrap; user-select: text; }
         .activities-display-container { height: 100%; overflow: hidden; position: relative; } .activities-display-scroller { position: absolute; width: 100%; top: 0; transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); }
-        .activity-display-item { padding: 1.5rem; margin: 0 1rem 1rem 0; border: 1px solid var(--border-color); border-radius: 8px; opacity: 0.4; transform: scale(0.95); transition: opacity 0.5s, transform 0.5s, box-shadow 0.5s; } .activity-display-item.is-active { opacity: 1; transform: scale(1); box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); border-color: var(--accent-color); }
-        .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; } .activity-display-item span { font-style: italic; color: #777; } .activity-display-item p { margin-top: 1rem; white-space: pre-wrap; user-select: text; }
+        .activity-display-item { padding: 1.5rem; margin: 0 1rem 1rem 0; border: 1px solid var(--border-color); border-radius: 8px; transition: box-shadow 0.5s; }
+        .sub-activity-display-item { opacity: 0.4; transform: scale(0.98); transition: opacity 0.5s, transform 0.5s, border-color 0.5s; padding: 1rem 0; }
+        .sub-activity-display-item:not(:first-child) { border-top: 1px dashed var(--border-color); }
+        .sub-activity-display-item.is-active { opacity: 1; transform: scale(1); }
+        .activity-display-item.is-active-parent { box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); border-color: var(--accent-color); }
+        .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+        .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; }
+        .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
         .stop-teaching-btn { position: fixed; bottom: 2rem; right: 2rem; background-color: var(--stop-color); color: white; border: none; padding: 1rem 1.5rem; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s; transform: scale(0); opacity: 0; z-index: 1100; }
         .stop-teaching-btn:hover { background-color: var(--stop-color-hover); }
         .time-controls-container { position: absolute; top: 0; left: 0; width: 100px; height: 100%; display: flex; flex-direction: column; align-items: center; padding: 1rem 0; background: var(--primary-light); border-right: 1px solid var(--border-color); z-index: 20; }
@@ -150,10 +155,8 @@
                     document.getElementById(pageId).style.display = 'block';
                     if (pageId === 'my-lessons') { loadLessonsIntoView(); } 
                     else if (pageId === 'lesson-planner' && !e.target.closest('.dropdown')) { 
-                        document.getElementById('current-lesson-name').value = ''; 
-                        document.querySelector('.lesson-form').reset();
-                        activitiesContainer.innerHTML = '';
-                        updateTotalTime();
+                        document.getElementById('current-lesson-name').value = ''; document.querySelector('.lesson-form').reset();
+                        activitiesContainer.innerHTML = ''; updateTotalTime();
                     }
                 });
             });
@@ -175,15 +178,8 @@
             addActivityBtn.addEventListener('click', () => { const newActivity = createActivityElement(); newActivity.style.cssText = 'max-height:0; opacity:0; padding-top:0; padding-bottom:0; margin-bottom:0;'; activitiesContainer.appendChild(newActivity); setTimeout(() => { newActivity.style.cssText = ''; }, 10); });
             activitiesContainer.addEventListener('input', e => { if (e.target.classList.contains('activity-minutes')) updateTotalTime(); });
             activitiesContainer.addEventListener('click', e => {
-                if (e.target.classList.contains('delete-activity-btn')) {
-                    const activityItem = e.target.closest('.activity-item');
-                    activityItem.classList.add('deleting');
-                    setTimeout(() => { activityItem.remove(); updateTotalTime(); }, 500);
-                } else if (e.target.classList.contains('divide-activity-btn')) {
-                    const subContainer = e.target.closest('.activity-item').querySelector('.sub-activity-container');
-                    const newSubActivityHtml = createSubActivityElement();
-                    subContainer.insertAdjacentHTML('beforeend', newSubActivityHtml);
-                }
+                if (e.target.classList.contains('delete-activity-btn')) { const activityItem = e.target.closest('.activity-item'); activityItem.classList.add('deleting'); setTimeout(() => { activityItem.remove(); updateTotalTime(); }, 500); }
+                else if (e.target.classList.contains('divide-activity-btn')) { const subContainer = e.target.closest('.activity-item').querySelector('.sub-activity-container'); subContainer.insertAdjacentHTML('beforeend', createSubActivityElement()); }
             });
 
             // --- Save/Load Functionality ---
@@ -193,13 +189,7 @@
             confirmSaveBtn.addEventListener('click', () => {
                 const lessonName = lessonNameInput.value.trim(); if (!lessonName) { alert("Please enter a name for the lesson."); return; }
                 const lessonData = { courseName: document.getElementById('course-name').value, unitName: document.getElementById('unit-name').value, courseObjectives: document.getElementById('course-objectives').value, learningGoals: document.getElementById('learning-goals').value, activities: [] };
-                activitiesContainer.querySelectorAll('.activity-item').forEach(item => {
-                    const subActivities = [];
-                    item.querySelectorAll('.sub-activity-item').forEach(subItem => {
-                        subActivities.push({ minutes: subItem.querySelector('.activity-minutes').value, notes: subItem.querySelector('textarea').value });
-                    });
-                    lessonData.activities.push({ name: item.querySelector('.activity-name').value, subActivities });
-                });
+                activitiesContainer.querySelectorAll('.activity-item').forEach(item => { const subActivities = []; item.querySelectorAll('.sub-activity-item').forEach(subItem => { subActivities.push({ minutes: subItem.querySelector('.activity-minutes').value, notes: subItem.querySelector('textarea').value }); }); lessonData.activities.push({ name: item.querySelector('.activity-name').value, subActivities }); });
                 localStorage.setItem(`lesson_${lessonName}`, JSON.stringify(lessonData)); currentLessonNameInput.value = lessonName; saveModalOverlay.classList.remove('active');
                 popupMessage.classList.add('show'); setTimeout(() => popupMessage.classList.remove('show'), 2000);
             });
@@ -229,15 +219,27 @@
 
             // --- Teach Mode Functionality ---
             const teachLessonBtn = document.getElementById('teach-lesson-btn'); const stopTeachingBtn = document.getElementById('stop-teaching-btn'); const staticInfoPanel = document.getElementById('static-info-panel'); const activitiesDisplayScroller = document.getElementById('activities-display-scroller'); const playPauseBtn = document.getElementById('play-pause-btn'); const teachTimeDisplay = document.getElementById('teach-time-display'); const timeBarFill = document.getElementById('time-bar-fill'); const timeBarHandle = document.getElementById('time-bar-handle'); const timeBarContainer = document.getElementById('time-bar-container');
-            let activitiesData = []; let totalLessonSeconds = 0; let currentSeconds = 0; let timerInterval = null; let isPaused = true;
+            let teachModeActivities = []; let totalLessonSeconds = 0; let currentSeconds = 0; let timerInterval = null; let isPaused = true;
             const formatTime = (seconds) => { const mins = String(Math.floor(Math.abs(seconds)/60)).padStart(2,'0'); const secs = String(Math.abs(seconds)%60).padStart(2,'0'); return `${mins}:${secs}`; };
             const updateUI = () => {
                 const timerMode = document.querySelector('input[name="timer-mode"]:checked').value; const progress = totalLessonSeconds > 0 ? (currentSeconds/totalLessonSeconds) : 0; const totalTimeFormatted = formatTime(totalLessonSeconds);
                 if (timerMode === 'timer') { const remainingSeconds = totalLessonSeconds - currentSeconds; teachTimeDisplay.textContent = formatTime(remainingSeconds); const fillHeight = (1 - progress) * 100; timeBarFill.style.height = `${fillHeight}%`; timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`; }
                 else { teachTimeDisplay.innerHTML = `${formatTime(currentSeconds)} / ${totalTimeFormatted}`; const fillHeight = progress * 100; timeBarFill.style.height = `${fillHeight}%`; timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`; }
-                let activeActivityFound = false;
-                activitiesData.forEach((activity, index) => { const el = document.getElementById(`display-activity-${index}`); if (el && currentSeconds >= activity.startTime && currentSeconds < activity.endTime) { if (!el.classList.contains('is-active')) { document.querySelectorAll('.activity-display-item.is-active').forEach(i => i.classList.remove('is-active')); el.classList.add('is-active'); activitiesDisplayScroller.style.transform = `translateY(-${el.offsetTop}px)`; } activeActivityFound = true; } });
-                if (!activeActivityFound) { const first = document.getElementById('display-activity-0'); const last = activitiesData.length > 0 ? document.getElementById(`display-activity-${activitiesData.length - 1}`) : null; document.querySelectorAll('.activity-display-item.is-active').forEach(i => i.classList.remove('is-active')); if (currentSeconds >= totalLessonSeconds && last) { last.classList.add('is-active'); } else if (first) { first.classList.add('is-active'); activitiesDisplayScroller.style.transform = `translateY(0px)`; } }
+                let activeSubActivityFound = false;
+                document.querySelectorAll('.sub-activity-display-item.is-active').forEach(el => el.classList.remove('is-active')); document.querySelectorAll('.activity-display-item.is-active-parent').forEach(el => el.classList.remove('is-active-parent'));
+                for (const subAct of teachModeActivities) {
+                    if (currentSeconds >= subAct.startTime && currentSeconds < subAct.endTime) {
+                        const subActEl = document.getElementById(subAct.id);
+                        if (subActEl) {
+                            subActEl.classList.add('is-active');
+                            const parentEl = subActEl.closest('.activity-display-item');
+                            parentEl.classList.add('is-active-parent');
+                            activitiesDisplayScroller.style.transform = `translateY(-${parentEl.offsetTop}px)`;
+                        }
+                        activeSubActivityFound = true; break;
+                    }
+                }
+                if (!activeSubActivityFound) { const firstParent = document.getElementById('parent-activity-0'); if(firstParent) activitiesDisplayScroller.style.transform = `translateY(0px)`;}
             };
             const startTimer = () => { if (!isPaused || currentSeconds >= totalLessonSeconds) return; isPaused = false; playPauseBtn.innerHTML = '&#9208;'; timerInterval = setInterval(() => { if (currentSeconds < totalLessonSeconds) { currentSeconds++; updateUI(); } else { stopTimer(); } }, 1000); };
             const stopTimer = () => { isPaused = true; clearInterval(timerInterval); timerInterval = null; playPauseBtn.innerHTML = '&#9658;'; };
@@ -247,22 +249,37 @@
             teachLessonBtn.addEventListener('click', () => {
                 if (updateTotalTime() === 0) { alert("Please add at least one activity with a time greater than 0."); return; }
                 document.querySelector('input[name="timer-mode"][value="stopwatch"]').checked = true;
-                activitiesData = []; let cumulativeTime = 0;
+                teachModeActivities = []; let cumulativeTime = 0; let parentIndex = 0;
                 Array.from(activitiesContainer.children).forEach(item => {
                     const activityName = item.querySelector('.activity-name').value || `Unnamed Activity`;
-                    item.querySelectorAll('.sub-activity-item').forEach((subItem, index) => {
+                    const subItems = item.querySelectorAll('.sub-activity-item');
+                    subItems.forEach((subItem, subIndex) => {
                         const minutes = parseInt(subItem.querySelector('.activity-minutes').value, 10) || 0;
                         if (minutes > 0) {
-                            const subName = item.querySelectorAll('.sub-activity-item').length > 1 ? `${activityName} (Part ${index + 1})` : activityName;
-                            const notes = subItem.querySelector('textarea').value;
-                            activitiesData.push({ name: subName, minutes, notes, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60) });
+                            teachModeActivities.push({
+                                parentId: `parent-activity-${parentIndex}`, parentName: activityName, 
+                                id: `sub-activity-${cumulativeTime}`, isFirst: subIndex === 0,
+                                minutes, notes: subItem.querySelector('textarea').value,
+                                startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60)
+                            });
                             cumulativeTime += minutes * 60;
                         }
                     });
+                    if (subItems.length > 0) parentIndex++;
                 });
                 totalLessonSeconds = cumulativeTime;
                 staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
-                activitiesDisplayScroller.innerHTML = activitiesData.map((act, index) => `<div class="activity-display-item" id="display-activity-${index}"><h4>${act.name} <span>(${act.minutes} min)</span></h4><p>${act.notes||' '}</p></div>`).join('');
+                let currentParentId = null; let html = '';
+                teachModeActivities.forEach(act => {
+                    if (act.parentId !== currentParentId) {
+                        if (currentParentId !== null) html += `</div>`;
+                        html += `<div class="activity-display-item" id="${act.parentId}"><h4>${act.parentName}</h4>`;
+                        currentParentId = act.parentId;
+                    }
+                    html += `<div class="sub-activity-display-item" id="${act.id}"><div class="sub-activity-display-item-header"><span>Part ${act.id.split('-').pop()}</span><span>${act.minutes} min</span></div><p>${act.notes||' '}</p></div>`;
+                });
+                if (currentParentId !== null) html += `</div>`;
+                activitiesDisplayScroller.innerHTML = html;
                 resetTeachMode(); lessonPlannerPage.classList.add('teach-mode-active');
             });
             stopTeachingBtn.addEventListener('click', () => { lessonPlannerPage.classList.remove('teach-mode-active'); stopTimer(); });
