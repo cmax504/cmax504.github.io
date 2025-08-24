@@ -14,6 +14,7 @@
             --accent-color-hover: #2980b9; --teach-color: #27ae60; --teach-color-hover: #229954;
             --stop-color: #c0392b; --stop-color-hover: #a93226; --save-color: #8e44ad; --save-color-hover: #7d3c98;
             --duplicate-color: #16a085; --duplicate-color-hover: #117a65; --divide-color: #e67e22; --divide-color-hover: #d35400;
+            --folder-color: #34495e; --folder-color-hover: #2c3e50;
             --text-color-dark: #34495e; --text-color-light: #ffffff; --border-color: #bdc3c7;
             --font-heading: 'Playfair Display', serif; --font-body: 'Lato', sans-serif;
         }
@@ -81,11 +82,9 @@
         .sub-activity-display-item:not(:first-child) { border-top: 1px dashed var(--border-color); }
         .sub-activity-display-item.is-active { opacity: 1; transform: scale(1); }
         .activity-display-item.is-active-parent { box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); border-color: var(--accent-color); }
-        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; }
-        .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; } .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
         .activity-display-item-header .time-display { font-size: 1.1rem; color: #777; white-space: nowrap; font-style: normal; }
-        .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; }
-        .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
+        .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; } .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
         .activity-progress-bar { height: 6px; background-color: #ddd; border-radius: 3px; margin-bottom: 1rem; overflow: hidden; display: none; }
         .activity-progress-bar-fill { width: 0%; height: 100%; background-color: var(--duplicate-color); border-radius: 3px; transition: width 0.2s linear; }
         #lesson-planner.progress-bars-active .activity-progress-bar { display: block; }
@@ -103,13 +102,27 @@
         #lesson-planner.teach-mode-active .form-view { opacity: 0; transform: translateY(-20px); pointer-events: none; height: 0; overflow: hidden; }
         #lesson-planner.teach-mode-active .teach-view { display: block; opacity: 1; transform: translateY(0); }
         #lesson-planner.teach-mode-active .stop-teaching-btn { transform: scale(1); opacity: 1; }
-        .my-lessons-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .lesson-list-item { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; background: var(--primary-light); }
+        .my-lessons-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; } .my-lessons-header .actions { display: flex; gap: 1rem; }
+        #my-lessons-content { display: flex; gap: 2rem; } #my-lessons-content.center-folders { justify-content: center; }
+        #folder-list { flex-shrink: 0; width: 200px; } #lesson-list { flex-grow: 1; }
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem; }
+        .folder-item { position: relative; text-align: center; cursor: pointer; } .folder-item .icon { font-size: 4rem; color: var(--folder-color); transition: color 0.2s; } .folder-item:hover .icon { color: var(--folder-color-hover); }
+        .folder-item .name { font-size: 0.9rem; font-weight: bold; margin-top: 0.5rem; word-break: break-word; }
+        .folder-item .delete-folder-btn { position: absolute; top: -5px; right: -5px; background: var(--stop-color); color: white; border: 2px solid white; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; line-height: 18px; text-align: center; cursor: pointer; opacity: 0; transition: opacity 0.2s, transform 0.2s; }
+        .folder-item:hover .delete-folder-btn { opacity: 1; transform: scale(1.1); }
+        .folder-item.drag-over .icon { color: var(--accent-color); transform: scale(1.1); }
+        .lesson-list-item { position: relative; display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1rem; background: var(--primary-light); cursor: grab; }
+        .lesson-list-item:active { cursor: grabbing; }
         .lesson-list-item h3 { font-family: var(--font-heading); color: var(--primary-dark); }
         .lesson-list-item .actions { display: flex; flex-wrap: wrap; gap: 1rem; }
-        .lesson-list-item .btn-open { background-color: var(--teach-color); } .lesson-list-item .btn-open:hover { background-color: var(--teach-color-hover); }
-        .lesson-list-item .btn-duplicate { background-color: var(--duplicate-color); } .lesson-list-item .btn-duplicate:hover { background-color: var(--duplicate-color-hover); }
-        .lesson-list-item .btn-delete, .btn-delete-all { background-color: var(--stop-color); } .lesson-list-item .btn-delete:hover, .btn-delete-all:hover { background-color: var(--stop-color-hover); }
+        .btn-open { background-color: var(--teach-color); } .btn-open:hover { background-color: var(--teach-color-hover); } .btn-duplicate { background-color: var(--duplicate-color); } .btn-duplicate:hover { background-color: var(--duplicate-color-hover); }
+        .delete-lesson-btn { position: absolute; top: 0.5rem; right: 0.5rem; background: none; border: none; font-size: 1.5rem; color: var(--stop-color); cursor: pointer; transition: transform 0.2s, color 0.2s; }
+        .delete-lesson-btn:hover { transform: scale(1.2); color: var(--stop-color-hover); }
+        .btn-delete-all, .btn-create-folder { background-color: var(--stop-color); } .btn-delete-all:hover, .btn-create-folder:hover { background-color: var(--stop-color-hover); }
+        .btn-create-folder { background-color: var(--folder-color); } .btn-create-folder:hover { background-color: var(--folder-color-hover); }
+        .breadcrumb-nav { margin-bottom: 2rem; font-size: 1.1rem; } .breadcrumb-nav a { color: var(--accent-color); text-decoration: none; cursor: pointer; } .breadcrumb-nav span { margin: 0 0.5rem; }
+        #remove-from-folder-dropzone { display: none; padding: 2rem; border: 2px dashed var(--border-color); border-radius: 8px; text-align: center; margin-top: 2rem; color: #777; transition: background-color 0.2s, border-color 0.2s; }
+        #remove-from-folder-dropzone.drag-over { background-color: var(--primary-light); border-color: var(--accent-color); }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { background: white; padding: 2rem; border-radius: 8px; width: 90%; max-width: 500px; transform: scale(0.95); transition: transform 0.3s ease; }
@@ -122,29 +135,10 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <ul class="nav-container">
-            <li class="nav-item"><a class="nav-link active" data-page="home">Home</a></li>
-            <li class="nav-item">
-                <a class="nav-link" data-page="lesson-planner">Lesson Planner</a>
-                <ul class="dropdown">
-                    <li><a class="nav-link" data-page="my-lessons">My Lessons</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
-
+    <nav class="navbar"><ul class="nav-container"><li class="nav-item"><a class="nav-link active" data-page="home">Home</a></li><li class="nav-item"><a class="nav-link" data-page="lesson-planner">Lesson Planner</a><ul class="dropdown"><li><a class="nav-link" data-page="my-lessons">My Lessons</a></li></ul></li></ul></nav>
     <main id="home" class="page-content"><header class="hero-parallax" id="hero"><div class="hero-content"><h1 class="hero-title">The Humanist's Toolkit</h1><p class="hero-description">Though the word "Humanist" is in the title, this free resource is designed to assist researchers and educators of all sorts. Explore and enjoy! Much more to come!</p></div></header><section class="content-area" style="min-height: 40vh; background-color: #ffffff;"></section><footer class="site-footer"><p>Created by Mr. Cairo A. Maxwell of the University of Virginia, with the coding assistance of Google's Gemini API.</p></footer></main>
-
-    <main id="lesson-planner" class="page-content" style="display: none;">
-        <div class="content-area">
-            <div class="form-view"><form class="lesson-form"><div class="total-time-widget"><h3 >Total Lesson Time</h3><p id="total-time-display">0 Minutes</p></div><input type="hidden" id="current-lesson-name" value=""><h1>Lesson Planner</h1><div class="form-group"><label for="course-name">Course Name</label><input type="text" id="course-name"></div><div class="form-group"><label for="unit-name">Unit Name</label><input type="text" id="unit-name"></div><div class="form-group"><label for="course-objectives">Relevant Course Objectives</label><textarea id="course-objectives"></textarea></div><div class="form-group"><label for="learning-goals">Learning Goals of the Lesson</label><textarea id="learning-goals"></textarea></div><h2>Activities</h2><div id="activities-container"></div><div class="form-actions"><button type="button" class="btn save-lesson-btn" id="save-lesson-btn">Save Lesson</button><button type="button" class="btn add-activity-btn" id="add-activity-btn">+ Add Activity</button><button type="button" class="btn teach-lesson-btn" id="teach-lesson-btn">&#9658; Teach My Lesson</button></div></form></div>
-            <div class="teach-view"><div class="time-controls-container"><p id="teach-time-display">00:00 / 00:00</p><div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div><div class="time-bar-container" id="time-bar-container"><div class="time-bar-fill" id="time-bar-fill"></div><div class="time-bar-handle" id="time-bar-handle"></div></div><div class="teach-options"><label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label><label><input type="radio" name="timer-mode" value="timer"> Timer</label><label><input type="checkbox" id="progress-bar-toggle"> Progress Bars</label><label><input type="checkbox" id="kinetic-numbers-toggle"> Kinetic Numbers</label></div></div><div class="teach-view-container"><div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div><div class="resizer" id="resizer"></div><div class="teach-panel teach-view-right" id="static-info-panel"></div></div></div>
-            <button class="stop-teaching-btn" id="stop-teaching-btn">&#9724; Stop Teaching</button>
-        </div>
-    </main>
-
-    <main id="my-lessons" class="page-content" style="display: none;"><div class="content-area"><div class="content-container"><div class="my-lessons-header"><h1>My Lessons</h1><button class="btn btn-delete-all" id="delete-all-btn">Delete All Lessons</button></div><div id="lesson-list-container"></div></div></div></main>
+    <main id="lesson-planner" class="page-content" style="display: none;"><div class="content-area"><div class="form-view"><form class="lesson-form"><div class="total-time-widget"><h3 >Total Lesson Time</h3><p id="total-time-display">0 Minutes</p></div><input type="hidden" id="current-lesson-name" value=""><h1>Lesson Planner</h1><div class="form-group"><label for="course-name">Course Name</label><input type="text" id="course-name"></div><div class="form-group"><label for="unit-name">Unit Name</label><input type="text" id="unit-name"></div><div class="form-group"><label for="course-objectives">Relevant Course Objectives</label><textarea id="course-objectives"></textarea></div><div class="form-group"><label for="learning-goals">Learning Goals of the Lesson</label><textarea id="learning-goals"></textarea></div><h2>Activities</h2><div id="activities-container"></div><div class="form-actions"><button type="button" class="btn save-lesson-btn" id="save-lesson-btn">Save Lesson</button><button type="button" class="btn add-activity-btn" id="add-activity-btn">+ Add Activity</button><button type="button" class="btn teach-lesson-btn" id="teach-lesson-btn">&#9658; Teach My Lesson</button></div></form></div><div class="teach-view"><div class="time-controls-container"><p id="teach-time-display">00:00 / 00:00</p><div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div><div class="time-bar-container" id="time-bar-container"><div class="time-bar-fill" id="time-bar-fill"></div><div class="time-bar-handle" id="time-bar-handle"></div></div><div class="teach-options"><label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label><label><input type="radio" name="timer-mode" value="timer"> Timer</label><label><input type="checkbox" id="progress-bar-toggle"> Progress Bars</label><label><input type="checkbox" id="kinetic-numbers-toggle"> Kinetic Numbers</label></div></div><div class="teach-view-container"><div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div><div class="resizer" id="resizer"></div><div class="teach-panel teach-view-right" id="static-info-panel"></div></div></div><button class="stop-teaching-btn" id="stop-teaching-btn">&#9724; Stop Teaching</button></div></main>
+    <main id="my-lessons" class="page-content" style="display: none;"><div class="content-area"><div class="content-container"><div class="my-lessons-header"><h1>My Lessons</h1><div class="actions"><button class="btn btn-create-folder" id="create-folder-btn" title="Once a folder is created, add files into it by clicking and dragging them on top of the correct folder">Create Folder</button><button class="btn btn-delete-all" id="delete-all-btn">Delete All</button></div></div><nav id="breadcrumb-nav"></nav><div id="my-lessons-content"><div id="folder-list"></div><div id="lesson-list"></div></div><div id="remove-from-folder-dropzone"><p>Drag here to remove from current folder</p></div></div></div></main>
     <div class="modal-overlay" id="save-modal-overlay"><div class="modal-content"><h2>Save Lesson</h2><p>Please enter a name for this lesson plan. If a lesson with this name already exists, it will be overwritten.</p><input type="text" id="lesson-name-input" placeholder="e.g., Intro to Renaissance Art"><div class="modal-actions"><button type="button" class="btn btn-cancel" id="cancel-save-btn">Cancel</button><button type="button" class="btn save-lesson-btn" id="confirm-save-btn">Save</button></div></div></div>
     <div class="popup-message" id="popup-message">Save Successful!</div>
 
@@ -153,6 +147,7 @@
             // --- ROBUST NAVIGATION LOGIC ---
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page-content');
+            let currentFolderId = 'root';
             const navigateToPage = (pageId, isNewLesson = false) => {
                 if (!pageId) return;
                 const targetLink = document.querySelector(`.nav-link[data-page="${pageId}"]`);
@@ -163,16 +158,13 @@
                 if (parentNavItem.querySelector('.dropdown')) { parentNavItem.querySelector('a[data-page="lesson-planner"]').classList.add('active'); }
                 pages.forEach(page => page.style.display = 'none');
                 document.getElementById(pageId).style.display = 'block';
-                if (pageId === 'my-lessons') { loadLessonsIntoView(); } 
+                if (pageId === 'my-lessons') { currentFolderId = 'root'; renderMyLessons(); } 
                 else if (pageId === 'lesson-planner' && isNewLesson) { 
                     document.getElementById('current-lesson-name').value = ''; document.querySelector('.lesson-form').reset();
                     activitiesContainer.innerHTML = ''; updateTotalTime();
                 }
             };
-            navLinks.forEach(link => { link.addEventListener('click', function(e) {
-                const isNew = this.dataset.page === 'lesson-planner' && !this.closest('.dropdown');
-                navigateToPage(this.dataset.page, isNew);
-            }); });
+            navLinks.forEach(link => { link.addEventListener('click', function(e) { const isNew = this.dataset.page === 'lesson-planner' && !this.closest('.dropdown'); navigateToPage(this.dataset.page, isNew); }); });
 
             // --- Parallax Effect Script ---
             const hero = document.getElementById('hero');
@@ -211,40 +203,123 @@
                 }
             });
 
-            // --- Save/Load Functionality ---
-            const saveModalOverlay = document.getElementById('save-modal-overlay'); const saveLessonBtn = document.getElementById('save-lesson-btn'); const confirmSaveBtn = document.getElementById('confirm-save-btn'); const cancelSaveBtn = document.getElementById('cancel-save-btn'); const lessonNameInput = document.getElementById('lesson-name-input'); const currentLessonNameInput = document.getElementById('current-lesson-name'); const popupMessage = document.getElementById('popup-message'); const lessonListContainer = document.getElementById('lesson-list-container'); const deleteAllBtn = document.getElementById('delete-all-btn');
+            // --- Save/Load & Folder Functionality ---
+            const saveModalOverlay = document.getElementById('save-modal-overlay'); const saveLessonBtn = document.getElementById('save-lesson-btn'); const confirmSaveBtn = document.getElementById('confirm-save-btn'); const cancelSaveBtn = document.getElementById('cancel-save-btn'); const lessonNameInput = document.getElementById('lesson-name-input'); const currentLessonNameInput = document.getElementById('current-lesson-name'); const popupMessage = document.getElementById('popup-message'); const myLessonsContent = document.getElementById('my-lessons-content'); const folderList = document.getElementById('folder-list'); const lessonList = document.getElementById('lesson-list'); const deleteAllBtn = document.getElementById('delete-all-btn'); const createFolderBtn = document.getElementById('create-folder-btn'); const breadcrumbNav = document.getElementById('breadcrumb-nav'); const removeFromFolderDropzone = document.getElementById('remove-from-folder-dropzone');
+            
+            const getData = () => { return JSON.parse(localStorage.getItem('humanistToolkitData')) || { lessons: {}, folders: {} }; };
+            const saveData = (data) => { localStorage.setItem('humanistToolkitData', JSON.stringify(data)); };
+            const generateId = () => `id_${new Date().getTime()}_${Math.random()}`;
+
             saveLessonBtn.addEventListener('click', () => { lessonNameInput.value = currentLessonNameInput.value; saveModalOverlay.classList.add('active'); });
             cancelSaveBtn.addEventListener('click', () => saveModalOverlay.classList.remove('active'));
             confirmSaveBtn.addEventListener('click', () => {
                 const lessonName = lessonNameInput.value.trim(); if (!lessonName) { alert("Please enter a name for the lesson."); return; }
-                const lessonData = { courseName: document.getElementById('course-name').value, unitName: document.getElementById('unit-name').value, courseObjectives: document.getElementById('course-objectives').value, learningGoals: document.getElementById('learning-goals').value, activities: [] };
+                const data = getData();
+                const lessonData = { folderId: (data.lessons[lessonName] && data.lessons[lessonName].folderId) || currentFolderId, courseName: document.getElementById('course-name').value, unitName: document.getElementById('unit-name').value, courseObjectives: document.getElementById('course-objectives').value, learningGoals: document.getElementById('learning-goals').value, activities: [] };
                 activitiesContainer.querySelectorAll('.activity-item').forEach(item => { const subActivities = []; item.querySelectorAll('.sub-activity-item').forEach(subItem => { subActivities.push({ minutes: subItem.querySelector('.activity-minutes').value, notes: subItem.querySelector('textarea').value }); }); lessonData.activities.push({ name: item.querySelector('.activity-name').value, subActivities }); });
-                localStorage.setItem(`lesson_${lessonName}`, JSON.stringify(lessonData)); currentLessonNameInput.value = lessonName; saveModalOverlay.classList.remove('active');
+                data.lessons[lessonName] = lessonData;
+                saveData(data); currentLessonNameInput.value = lessonName; saveModalOverlay.classList.remove('active');
                 popupMessage.classList.add('show'); setTimeout(() => popupMessage.classList.remove('show'), 2000);
             });
-            const loadLessonsIntoView = () => {
-                lessonListContainer.innerHTML = ''; const keys = Object.keys(localStorage).filter(k => k.startsWith('lesson_'));
-                if (keys.length === 0) { lessonListContainer.innerHTML = '<p>No saved lessons found.</p>'; deleteAllBtn.style.display = 'none'; return; }
-                deleteAllBtn.style.display = 'block';
-                keys.forEach(key => { const lessonName = key.replace('lesson_', ''); const item = document.createElement('div'); item.className = 'lesson-list-item'; item.innerHTML = `<h3>${lessonName}</h3><div class="actions"><button class="btn btn-open" data-lesson-name="${lessonName}">Open</button><button class="btn btn-duplicate" data-lesson-name="${lessonName}">Duplicate</button><button class="btn btn-delete" data-lesson-name="${lessonName}">Delete</button></div>`; lessonListContainer.appendChild(item); });
-            };
-            lessonListContainer.addEventListener('click', e => {
-                const lessonName = e.target.dataset.lessonName; if (!lessonName) return;
-                if (e.target.classList.contains('btn-open')) {
-                    const data = JSON.parse(localStorage.getItem(`lesson_${lessonName}`)); if (!data) return;
-                    document.getElementById('course-name').value = data.courseName; document.getElementById('unit-name').value = data.unitName; document.getElementById('course-objectives').value = data.courseObjectives; document.getElementById('learning-goals').value = data.learningGoals; currentLessonNameInput.value = lessonName;
-                    activitiesContainer.innerHTML = ''; data.activities.forEach(act => { const el = createActivityElement(act.name, act.subActivities); activitiesContainer.appendChild(el); });
-                    updateTotalTime(); navigateToPage('lesson-planner', false);
-                } else if (e.target.classList.contains('btn-delete')) {
-                    if (confirm(`Are you sure you want to delete the lesson "${lessonName}"? This cannot be undone.`)) { localStorage.removeItem(`lesson_${lessonName}`); loadLessonsIntoView(); }
-                } else if (e.target.classList.contains('btn-duplicate')) {
-                    const originalData = localStorage.getItem(`lesson_${lessonName}`); if (!originalData) return;
-                    let newName = `Copy of ${lessonName}`; let counter = 2;
-                    while (localStorage.getItem(`lesson_${newName}`)) { newName = `Copy of ${lessonName} (${counter++})`; }
-                    localStorage.setItem(`lesson_${newName}`, originalData); loadLessonsIntoView();
+
+            createFolderBtn.addEventListener('click', () => {
+                const folderName = prompt("Enter a name for the new folder:");
+                if(folderName && folderName.trim()){
+                    const data = getData(); const newId = generateId();
+                    data.folders[newId] = { id: newId, name: folderName.trim(), parentId: currentFolderId };
+                    saveData(data); renderMyLessons();
                 }
             });
-            deleteAllBtn.addEventListener('click', () => { if (confirm('Are you sure you want to delete ALL saved lessons? This action is permanent and cannot be undone.')) { Object.keys(localStorage).filter(k => k.startsWith('lesson_')).forEach(k => localStorage.removeItem(k)); loadLessonsIntoView(); } });
+
+            const renderMyLessons = () => {
+                const data = getData();
+                folderList.innerHTML = ''; lessonList.innerHTML = ''; breadcrumbNav.innerHTML = '';
+                
+                let path = []; let parentId = currentFolderId;
+                while (parentId !== 'root') { path.unshift({id: parentId, name: data.folders[parentId].name}); parentId = data.folders[parentId].parentId; }
+                path.unshift({id: 'root', name: 'My Lessons'});
+                breadcrumbNav.innerHTML = path.map(p => `<a data-folder-id="${p.id}">${p.name}</a>`).join('<span>&gt;</span>');
+                
+                const foldersInView = Object.values(data.folders).filter(f => f.parentId === currentFolderId);
+                const lessonsInView = Object.entries(data.lessons).filter(([name, lesson]) => lesson.folderId === currentFolderId);
+
+                if (foldersInView.length > 0) {
+                    folderList.style.display = 'block';
+                    folderList.innerHTML = `<div class="folder-grid">${foldersInView.map(f => `<div class="folder-item" data-folder-id="${f.id}"><div class="icon">&#128193;</div><div class="name">${f.name}</div><button class="delete-folder-btn" data-folder-id="${f.id}">&times;</button></div>`).join('')}</div>`;
+                } else {
+                    folderList.style.display = 'none';
+                }
+
+                if (lessonsInView.length > 0) {
+                    lessonList.innerHTML = lessonsInView.map(([name, lesson]) => `<div class="lesson-list-item" draggable="true" data-lesson-name="${name}"><h3>${name}</h3><div class="actions"><button class="btn btn-open" data-lesson-name="${name}">Open</button><button class="btn btn-duplicate" data-lesson-name="${name}">Duplicate</button></div><button class="delete-lesson-btn" data-lesson-name="${name}">&times;</button></div>`).join('');
+                } else {
+                    lessonList.innerHTML = '<p>No lessons in this folder.</p>';
+                }
+
+                myLessonsContent.classList.toggle('center-folders', lessonsInView.length === 0);
+                removeFromFolderDropzone.style.display = currentFolderId !== 'root' ? 'block' : 'none';
+                deleteAllBtn.style.display = Object.keys(data.lessons).length > 0 ? 'inline-block' : 'none';
+            };
+            
+            breadcrumbNav.addEventListener('click', e => { if (e.target.tagName === 'A') { currentFolderId = e.target.dataset.folderId; renderMyLessons(); } });
+
+            myLessonsContent.addEventListener('click', e => {
+                const lessonName = e.target.dataset.lessonName; const folderId = e.target.closest('.folder-item')?.dataset.folderId; const deleteFolderId = e.target.dataset.folderId;
+                if (folderId && e.target.className !== 'delete-folder-btn') { currentFolderId = folderId; renderMyLessons(); }
+                else if(deleteFolderId && e.target.classList.contains('delete-folder-btn')){
+                     if (confirm(`Are you sure you want to delete folder "${getData().folders[deleteFolderId].name}"? Its contents will be moved to the parent folder.`)) {
+                        const data = getData();
+                        const parentId = data.folders[deleteFolderId].parentId;
+                        Object.values(data.lessons).forEach(l => { if (l.folderId === deleteFolderId) l.folderId = parentId; });
+                        Object.values(data.folders).forEach(f => { if (f.parentId === deleteFolderId) f.parentId = parentId; });
+                        delete data.folders[deleteFolderId];
+                        saveData(data); renderMyLessons();
+                    }
+                }
+                else if (lessonName) {
+                    if (e.target.classList.contains('btn-open')) {
+                        const data = getData(); if (!data.lessons[lessonName]) return;
+                        const lesson = data.lessons[lessonName];
+                        document.getElementById('course-name').value = lesson.courseName; document.getElementById('unit-name').value = lesson.unitName; document.getElementById('course-objectives').value = lesson.courseObjectives; document.getElementById('learning-goals').value = lesson.learningGoals; currentLessonNameInput.value = lessonName;
+                        activitiesContainer.innerHTML = ''; lesson.activities.forEach(act => { const el = createActivityElement(act.name, act.subActivities); activitiesContainer.appendChild(el); });
+                        updateTotalTime(); navigateToPage('lesson-planner', false);
+                    } else if (e.target.classList.contains('delete-lesson-btn')) {
+                        if (confirm(`Are you sure you want to delete the lesson "${lessonName}"? This cannot be undone.`)) { const data = getData(); delete data.lessons[lessonName]; saveData(data); renderMyLessons(); }
+                    } else if (e.target.classList.contains('btn-duplicate')) {
+                        const data = getData(); if (!data.lessons[lessonName]) return;
+                        let newName = `Copy of ${lessonName}`; let counter = 2;
+                        while (data.lessons[newName]) { newName = `Copy of ${lessonName} (${counter++})`; }
+                        data.lessons[newName] = JSON.parse(JSON.stringify(data.lessons[lessonName]));
+                        saveData(data); renderMyLessons();
+                    }
+                }
+            });
+            deleteAllBtn.addEventListener('click', () => { if (confirm('Are you sure you want to delete ALL saved lessons and folders? This action is permanent and cannot be undone.')) { localStorage.removeItem('humanistToolkitData'); renderMyLessons(); } });
+
+            // Drag and Drop
+            let draggedLessonName = null;
+            myLessonsContent.addEventListener('dragstart', e => { if (e.target.classList.contains('lesson-list-item')) { draggedLessonName = e.target.dataset.lessonName; e.dataTransfer.setData('text/plain', draggedLessonName); } });
+            myLessonsContent.addEventListener('dragover', e => { e.preventDefault(); const folderItem = e.target.closest('.folder-item'); if(folderItem) folderItem.classList.add('drag-over'); });
+            myLessonsContent.addEventListener('dragleave', e => { const folderItem = e.target.closest('.folder-item'); if(folderItem) folderItem.classList.remove('drag-over'); });
+            myLessonsContent.addEventListener('drop', e => {
+                e.preventDefault(); const folderItem = e.target.closest('.folder-item');
+                if (folderItem && draggedLessonName) {
+                    const folderId = folderItem.dataset.folderId; const data = getData();
+                    if(data.lessons[draggedLessonName]) data.lessons[draggedLessonName].folderId = folderId;
+                    saveData(data); renderMyLessons(); draggedLessonName = null;
+                }
+                folderItem?.classList.remove('drag-over');
+            });
+            removeFromFolderDropzone.addEventListener('dragover', e => { e.preventDefault(); e.target.classList.add('drag-over'); });
+            removeFromFolderDropzone.addEventListener('dragleave', e => e.target.classList.remove('drag-over'));
+            removeFromFolderDropzone.addEventListener('drop', e => {
+                e.preventDefault(); e.target.classList.remove('drag-over');
+                if(draggedLessonName && currentFolderId !== 'root'){
+                    const data = getData(); const parentId = data.folders[currentFolderId].parentId;
+                    if(data.lessons[draggedLessonName]) data.lessons[draggedLessonName].folderId = parentId;
+                    saveData(data); renderMyLessons(); draggedLessonName = null;
+                }
+            });
 
             // --- Teach Mode Functionality ---
             const teachLessonBtn = document.getElementById('teach-lesson-btn'); const stopTeachingBtn = document.getElementById('stop-teaching-btn'); const staticInfoPanel = document.getElementById('static-info-panel'); const activitiesDisplayScroller = document.getElementById('activities-display-scroller'); const playPauseBtn = document.getElementById('play-pause-btn'); const teachTimeDisplay = document.getElementById('teach-time-display'); const timeBarFill = document.getElementById('time-bar-fill'); const timeBarHandle = document.getElementById('time-bar-handle'); const timeBarContainer = document.getElementById('time-bar-container');
@@ -303,18 +378,18 @@
                             cumulativeTime += minutes * 60; parentTotalMinutes += minutes;
                         }
                     });
-                    if (subItems.length > 0) { parentActivitiesData.push({ parentId: `parent-activity-${parentIndex}`, parentName: activityName, totalMinutes: parentTotalMinutes, startTime: parentStartTime, endTime: cumulativeTime, totalSubActivities: subItems.length }); parentIndex++; }
+                    if (subItems.length > 0) { parentActivitiesData.push({ parentId: `parent-activity-${parentIndex}`, parentName: activityName, totalMinutes: parentTotalMinutes, startTime: parentStartTime, endTime: cumulativeTime }); parentIndex++; }
                 });
                 totalLessonSeconds = cumulativeTime;
                 staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
                 let html = '';
                 parentActivitiesData.forEach(parent => {
-                    html += `<div class="activity-display-item" id="${parent.parentId}"><div class="activity-progress-bar"><div class="activity-progress-bar-fill" id="${parent.parentId}-progress-fill"></div></div><div class="activity-display-item-header"><h4>${parent.parentName}</h4><span class="time-display" id="${parent.parentId}-time">${parent.totalMinutes} min</span></div>`;
+                    html += `<div class="activity-display-item" id="${parent.parentId}"><div class="activity-progress-bar"><div class="activity-progress-bar-fill" id="${parent.parentId}-progress-fill"></div></div><div class="activity-display-item-header"><h4 >${parent.parentName}</h4><span class="time-display" id="${parent.parentId}-time">${parent.totalMinutes} min</span></div>`;
                     teachModeActivities.filter(act => act.parentId === parent.parentId).forEach(act => {
-                        const partLabel = parent.totalSubActivities > 1 ? `Part ${act.partNumber}` : '';
-                        const timeLabelHtml = parent.totalSubActivities > 1 ? `<span class="time-display" id="${act.id}-time">${act.minutes} min</span>` : '';
+                        const partLabel = act.parentTotalSubActivities > 1 ? `Part ${act.partNumber}` : '';
+                        const timeLabelHtml = act.parentTotalSubActivities > 1 ? `<span class="time-display" id="${act.id}-time">${act.minutes} min</span>` : '';
                         html += `<div class="sub-activity-display-item" id="${act.id}">`;
-                        if (parent.totalSubActivities > 1) { html += `<div class="activity-progress-bar"><div class="activity-progress-bar-fill" id="${act.id}-progress-fill"></div></div>`; }
+                        if (act.parentTotalSubActivities > 1) { html += `<div class="activity-progress-bar"><div class="activity-progress-bar-fill" id="${act.id}-progress-fill"></div></div>`; }
                         html += `<div class="sub-activity-display-item-header"><span>${partLabel}</span>${timeLabelHtml}</div><p>${act.notes||' '}</p></div>`;
                     });
                     html += `</div>`;
