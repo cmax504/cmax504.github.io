@@ -81,9 +81,9 @@
         .sub-activity-display-item:not(:first-child) { border-top: 1px dashed var(--border-color); }
         .sub-activity-display-item.is-active { opacity: 1; transform: scale(1); }
         .activity-display-item.is-active-parent { box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4); border-color: var(--accent-color); }
-        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem; }
-        .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; }
-        .activity-display-item-header .time-display { font-size: 1.1rem; color: #777; white-space: nowrap; }
+        .activity-display-item-header { display: flex; justify-content: space-between; align-items: baseline; }
+        .activity-display-item h4 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 1rem; }
+        .activity-display-item-header .time-display { font-size: 1.1rem; color: #777; white-space: nowrap; font-style: normal; }
         .sub-activity-display-item-header { display: flex; justify-content: space-between; font-weight: bold; }
         .sub-activity-display-item p { margin-top: 0.5rem; white-space: pre-wrap; user-select: text; }
         .activity-progress-bar { height: 6px; background-color: #ddd; border-radius: 3px; margin-bottom: 1rem; overflow: hidden; display: none; }
@@ -139,7 +139,7 @@
     <main id="lesson-planner" class="page-content" style="display: none;">
         <div class="content-area">
             <div class="form-view"><form class="lesson-form"><div class="total-time-widget"><h3 >Total Lesson Time</h3><p id="total-time-display">0 Minutes</p></div><input type="hidden" id="current-lesson-name" value=""><h1>Lesson Planner</h1><div class="form-group"><label for="course-name">Course Name</label><input type="text" id="course-name"></div><div class="form-group"><label for="unit-name">Unit Name</label><input type="text" id="unit-name"></div><div class="form-group"><label for="course-objectives">Relevant Course Objectives</label><textarea id="course-objectives"></textarea></div><div class="form-group"><label for="learning-goals">Learning Goals of the Lesson</label><textarea id="learning-goals"></textarea></div><h2>Activities</h2><div id="activities-container"></div><div class="form-actions"><button type="button" class="btn save-lesson-btn" id="save-lesson-btn">Save Lesson</button><button type="button" class="btn add-activity-btn" id="add-activity-btn">+ Add Activity</button><button type="button" class="btn teach-lesson-btn" id="teach-lesson-btn">&#9658; Teach My Lesson</button></div></form></div>
-            <div class="teach-view"><div class="time-controls-container"><p id="teach-time-display">00:00 / 00:00</p><div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div><div class="time-bar-container" id="time-bar-container"><div class="time-bar-fill" id="time-bar-fill"></div><div class="time-bar-handle" id="time-bar-handle"></div></div><div class="teach-options"><label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label><label><input type="radio" name="timer-mode" value="timer"> Timer</label><label><input type="checkbox" id="progress-bar-toggle"> Bars</label><label><input type="checkbox" id="kinetic-numbers-toggle"> Kinetic</label></div></div><div class="teach-view-container"><div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div><div class="resizer" id="resizer"></div><div class="teach-panel teach-view-right" id="static-info-panel"></div></div></div>
+            <div class="teach-view"><div class="time-controls-container"><p id="teach-time-display">00:00 / 00:00</p><div class="timer-controls"><button id="play-pause-btn">&#9658;</button></div><div class="time-bar-container" id="time-bar-container"><div class="time-bar-fill" id="time-bar-fill"></div><div class="time-bar-handle" id="time-bar-handle"></div></div><div class="teach-options"><label><input type="radio" name="timer-mode" value="stopwatch" checked> Stopwatch</label><label><input type="radio" name="timer-mode" value="timer"> Timer</label><label><input type="checkbox" id="progress-bar-toggle"> Progress Bars</label><label><input type="checkbox" id="kinetic-numbers-toggle"> Kinetic Numbers</label></div></div><div class="teach-view-container"><div class="teach-panel teach-view-left"><div class="activities-display-container"><div class="activities-display-scroller" id="activities-display-scroller"></div></div></div><div class="resizer" id="resizer"></div><div class="teach-panel teach-view-right" id="static-info-panel"></div></div></div>
             <button class="stop-teaching-btn" id="stop-teaching-btn">&#9724; Stop Teaching</button>
         </div>
     </main>
@@ -255,39 +255,31 @@
                 const timerMode = document.querySelector('input[name="timer-mode"]:checked').value; const progress = totalLessonSeconds > 0 ? (currentSeconds/totalLessonSeconds) : 0; const totalTimeFormatted = formatTime(totalLessonSeconds);
                 if (timerMode === 'timer') { const remainingSeconds = totalLessonSeconds - currentSeconds; teachTimeDisplay.textContent = formatTime(remainingSeconds); const fillHeight = (1 - progress) * 100; timeBarFill.style.height = `${fillHeight}%`; timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`; }
                 else { teachTimeDisplay.innerHTML = `${formatTime(currentSeconds)} / ${totalTimeFormatted}`; const fillHeight = progress * 100; timeBarFill.style.height = `${fillHeight}%`; timeBarHandle.style.bottom = `calc(${fillHeight}% - 5px)`; }
-                
                 let activeSubActivity = null;
                 for (const subAct of teachModeActivities) { if (currentSeconds >= subAct.startTime && currentSeconds < subAct.endTime) { activeSubActivity = subAct; break; } }
-                
                 document.querySelectorAll('.sub-activity-display-item.is-active, .activity-display-item.is-active-parent').forEach(el => el.classList.remove('is-active', 'is-active-parent'));
-                if (activeSubActivity) {
-                    const subActEl = document.getElementById(activeSubActivity.id);
-                    if (subActEl) { subActEl.classList.add('is-active'); const parentEl = subActEl.closest('.activity-display-item'); parentEl.classList.add('is-active-parent'); activitiesDisplayScroller.style.transform = `translateY(-${parentEl.offsetTop}px)`; }
-                } else { const firstParent = document.getElementById('parent-activity-0'); if(firstParent) activitiesDisplayScroller.style.transform = `translateY(0px)`; }
-
+                if (activeSubActivity) { const subActEl = document.getElementById(activeSubActivity.id); if (subActEl) { subActEl.classList.add('is-active'); const parentEl = subActEl.closest('.activity-display-item'); parentEl.classList.add('is-active-parent'); activitiesDisplayScroller.style.transform = `translateY(-${parentEl.offsetTop}px)`; } } 
+                else { const firstParent = document.getElementById('parent-activity-0'); if(firstParent) activitiesDisplayScroller.style.transform = `translateY(0px)`; }
                 parentActivitiesData.forEach(parent => {
-                    const parentProgress = (currentSeconds - parent.startTime) / (parent.endTime - parent.startTime);
-                    const clampedParentProgress = Math.max(0, Math.min(1, parentProgress));
-                    const parentBarFill = document.getElementById(`${parent.parentId}-progress-fill`);
-                    if(parentBarFill) parentBarFill.style.width = timerMode === 'timer' ? `${(1 - clampedParentProgress) * 100}%` : `${clampedParentProgress * 100}%`;
+                    const parentProgress = (currentSeconds - parent.startTime) / (parent.endTime - parent.startTime); const clampedParentProgress = Math.max(0, Math.min(1, parentProgress));
+                    const parentBarFill = document.getElementById(`${parent.parentId}-progress-fill`); if(parentBarFill) parentBarFill.style.width = timerMode === 'timer' ? `${(1 - clampedParentProgress) * 100}%` : `${clampedParentProgress * 100}%`;
+                    const timeDisplayEl = document.getElementById(`${parent.parentId}-time`);
+                    if (timeDisplayEl) {
+                        if (kineticNumbersToggle.checked && activeSubActivity && activeSubActivity.parentId === parent.parentId) {
+                            const localSeconds = currentSeconds - parent.startTime; const totalSubSeconds = parent.endTime - parent.startTime;
+                            if (timerMode === 'timer') { timeDisplayEl.textContent = formatTime(totalSubSeconds - localSeconds); } else { timeDisplayEl.textContent = `${formatTime(localSeconds)} / ${formatTime(totalSubSeconds)}`; }
+                        } else { timeDisplayEl.textContent = `${parent.totalMinutes} min`; }
+                    }
                 });
-
                 teachModeActivities.forEach(subAct => {
-                    const subProgress = (currentSeconds - subAct.startTime) / (subAct.endTime - subAct.startTime);
-                    const clampedSubProgress = Math.max(0, Math.min(1, subProgress));
-                    const subBarFill = document.getElementById(`${subAct.id}-progress-fill`);
-                    if(subBarFill) subBarFill.style.width = timerMode === 'timer' ? `${(1 - clampedSubProgress) * 100}%` : `${clampedSubProgress * 100}%`;
-
+                    const subProgress = (currentSeconds - subAct.startTime) / (subAct.endTime - subAct.startTime); const clampedSubProgress = Math.max(0, Math.min(1, subProgress));
+                    const subBarFill = document.getElementById(`${subAct.id}-progress-fill`); if(subBarFill) subBarFill.style.width = timerMode === 'timer' ? `${(1 - clampedSubProgress) * 100}%` : `${clampedSubProgress * 100}%`;
                     const timeDisplayEl = document.getElementById(`${subAct.id}-time`);
                     if (timeDisplayEl) {
-                        if (kineticNumbersToggle.checked && subAct === activeSubActivity) {
-                            const localSeconds = currentSeconds - subAct.startTime;
-                            const totalSubSeconds = subAct.endTime - subAct.startTime;
-                            if (timerMode === 'timer') { timeDisplayEl.textContent = formatTime(totalSubSeconds - localSeconds); } 
-                            else { timeDisplayEl.textContent = `${formatTime(localSeconds)} / ${formatTime(totalSubSeconds)}`; }
-                        } else {
-                            timeDisplayEl.textContent = subAct.parentTotalSubActivities > 1 ? `${subAct.minutes} min` : '';
-                        }
+                        if (kineticNumbersToggle.checked && subAct.parentTotalSubActivities > 1 && subAct === activeSubActivity) {
+                            const localSeconds = currentSeconds - subAct.startTime; const totalSubSeconds = subAct.endTime - subAct.startTime;
+                            if (timerMode === 'timer') { timeDisplayEl.textContent = formatTime(totalSubSeconds - localSeconds); } else { timeDisplayEl.textContent = `${formatTime(localSeconds)} / ${formatTime(totalSubSeconds)}`; }
+                        } else { timeDisplayEl.textContent = subAct.parentTotalSubActivities > 1 ? `${subAct.minutes} min` : ''; }
                     }
                 });
             };
@@ -297,41 +289,33 @@
             playPauseBtn.addEventListener('click', () => isPaused ? startTimer() : stopTimer());
             document.querySelectorAll('input[name="timer-mode"], #progress-bar-toggle, #kinetic-numbers-toggle').forEach(el => { el.addEventListener('change', resetTeachMode); });
             progressBarToggle.addEventListener('change', () => lessonPlannerPage.classList.toggle('progress-bars-active'));
-            
             teachLessonBtn.addEventListener('click', () => {
                 if (updateTotalTime() === 0) { alert("Please add at least one activity with a time greater than 0."); return; }
                 document.querySelector('input[name="timer-mode"][value="stopwatch"]').checked = true;
                 teachModeActivities = []; parentActivitiesData = []; let cumulativeTime = 0; let parentIndex = 0;
                 Array.from(activitiesContainer.children).forEach(item => {
                     const activityName = item.querySelector('.activity-name').value || `Unnamed Activity`;
-                    const subItems = item.querySelectorAll('.sub-activity-item');
-                    const parentStartTime = cumulativeTime;
-                    let parentTotalMinutes = 0;
+                    const subItems = item.querySelectorAll('.sub-activity-item'); const parentStartTime = cumulativeTime; let parentTotalMinutes = 0;
                     subItems.forEach((subItem, subIndex) => {
                         const minutes = parseInt(subItem.querySelector('.activity-minutes').value, 10) || 0;
                         if (minutes > 0) {
-                            teachModeActivities.push({ parentId: `parent-activity-${parentIndex}`, id: `sub-activity-${parentIndex}-${subIndex}`, partNumber: subIndex + 1, minutes, notes: subItem.querySelector('textarea').value, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60) });
-                            cumulativeTime += minutes * 60;
-                            parentTotalMinutes += minutes;
+                            teachModeActivities.push({ parentId: `parent-activity-${parentIndex}`, id: `sub-activity-${parentIndex}-${subIndex}`, partNumber: subIndex + 1, minutes, notes: subItem.querySelector('textarea').value, startTime: cumulativeTime, endTime: cumulativeTime + (minutes * 60), parentTotalSubActivities: subItems.length });
+                            cumulativeTime += minutes * 60; parentTotalMinutes += minutes;
                         }
                     });
-                    if (subItems.length > 0) {
-                        parentActivitiesData.push({ parentId: `parent-activity-${parentIndex}`, parentName: activityName, totalMinutes: parentTotalMinutes, startTime: parentStartTime, endTime: cumulativeTime, totalSubActivities: subItems.length });
-                        parentIndex++;
-                    }
+                    if (subItems.length > 0) { parentActivitiesData.push({ parentId: `parent-activity-${parentIndex}`, parentName: activityName, totalMinutes: parentTotalMinutes, startTime: parentStartTime, endTime: cumulativeTime, totalSubActivities: subItems.length }); parentIndex++; }
                 });
                 totalLessonSeconds = cumulativeTime;
                 staticInfoPanel.innerHTML = `<div class="static-info-item"><h3>Course Name</h3><p>${document.getElementById('course-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Unit Name</h3><p>${document.getElementById('unit-name').value||'N/A'}</p></div><div class="static-info-item"><h3>Course Objectives</h3><p>${document.getElementById('course-objectives').value||'N/A'}</p></div><div class="static-info-item"><h3>Learning Goals</h3><p>${document.getElementById('learning-goals').value||'N/A'}</p></div>`;
                 let html = '';
                 parentActivitiesData.forEach(parent => {
-                    html += `<div class="activity-display-item" id="${parent.parentId}">`;
-                    html += `<div class="activity-progress-bar"><div class="activity-progress-bar-fill" id="${parent.parentId}-progress-fill"></div></div>`;
-                    html += `<div class="activity-display-item-header"><h4>${parent.parentName}</h4><span class="time-display">${parent.totalMinutes} min</span></div>`;
+                    html += `<div class="activity-display-item" id="${parent.parentId}"><div class="activity-progress-bar"><div class="activity-progress-bar-fill" id="${parent.parentId}-progress-fill"></div></div><div class="activity-display-item-header"><h4>${parent.parentName}</h4><span class="time-display" id="${parent.parentId}-time">${parent.totalMinutes} min</span></div>`;
                     teachModeActivities.filter(act => act.parentId === parent.parentId).forEach(act => {
                         const partLabel = parent.totalSubActivities > 1 ? `Part ${act.partNumber}` : '';
+                        const timeLabelHtml = parent.totalSubActivities > 1 ? `<span class="time-display" id="${act.id}-time">${act.minutes} min</span>` : '';
                         html += `<div class="sub-activity-display-item" id="${act.id}">`;
                         if (parent.totalSubActivities > 1) { html += `<div class="activity-progress-bar"><div class="activity-progress-bar-fill" id="${act.id}-progress-fill"></div></div>`; }
-                        html += `<div class="sub-activity-display-item-header"><span>${partLabel}</span><span class="time-display" id="${act.id}-time">${act.minutes} min</span></div><p>${act.notes||' '}</p></div>`;
+                        html += `<div class="sub-activity-display-item-header"><span>${partLabel}</span>${timeLabelHtml}</div><p>${act.notes||' '}</p></div>`;
                     });
                     html += `</div>`;
                 });
